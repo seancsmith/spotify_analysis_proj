@@ -1,0 +1,160 @@
+---
+title: "Linear Model Building"
+output: html_notebook
+---
+
+```{r include=FALSE}
+library(spotifyr)
+library(tidyverse)
+library(modelr)
+library(infer)
+library(modelr)
+library(ggfortify)
+library(GGally)
+```
+
+```{r include=FALSE}
+spotify_data_clean_join <- read_csv("clean_data/spotify_clean_join.csv")
+spotify_data <- read_csv("raw_data/spotify_data.csv")
+```
+
+```{r}
+spotify_data_for_modelling <- spotify_data_clean_join %>% 
+  select(-c(artists, track_name, id, genres, followers))
+```
+
+```{r}
+n_data <- nrow(spotify_data_for_modelling)
+
+test_index <- sample(1:n_data, size = n_data*0.2)
+
+train_lm <- slice(spotify_data_for_modelling, -test_index)
+test_lm <- slice(spotify_data_for_modelling, test_index)
+
+options(scipen = 999)
+```
+
+
+```{r}
+train %>% 
+  select(1:8) %>% 
+  ggpairs()
+```
+
+```{r}
+train %>% 
+  select(popularity, explicit, 9:18) %>% 
+  ggpairs()
+```
+
+
+```{r}
+n_data <- nrow(spotify_data_for_modelling)
+
+sample_index <- sample(1:n_data, size = n_data*0.2)
+
+spot_sample <- slice(spotify_data_for_modelling, sample_index)
+
+spot_sample %>% 
+  ggplot() +
+  aes(x = danceability, y = popularity) +
+  geom_point(alpha = 0.7, colour = "red4") +
+  geom_smooth(method = "lm", se = FALSE)
+
+spot_sample %>% 
+  ggplot() +
+  aes(x = year, y = popularity) +
+  geom_point(alpha = 0.7, colour = "red4") +
+  geom_smooth(method = "lm", se = FALSE)
+
+res <- cor.test(spotify_data_for_modelling$popularity, spotify_data_for_modelling$year, 
+                    method = "pearson")
+
+```
+
+REMOVE 2020?? Lots of popularity 0
+```{r}
+spotify_data_for_modelling %>% 
+  filter(year == "2020-01-01") %>% 
+  ggplot() +
+  aes(x = popularity) +
+  geom_histogram()
+```
+
+```{r}
+model_1a <- lm(popularity ~ year,
+               data = train_lm)
+
+summary(model_1a)
+```
+
+
+ 
+```{r}
+model_1b <- lm(popularity ~ explicit,
+               data = train_lm)
+
+summary(model_1b)
+
+```
+
+```{r}
+model_1c <- lm(popularity ~ loudness,
+               data = train_lm)
+
+summary(model_1c)
+```
+ 
+```{r}
+spotify_res <- train_lm %>% 
+  add_residuals(model_1a) %>% 
+  select(-popularity, -year) %>% 
+  ggpairs(progress = FALSE)
+```
+ 
+```{r}
+model_2a <- lm(popularity ~ year + loudness,
+               data = train_lm)
+
+summary(model_2a)
+```
+```{r}
+model_2b <- lm(popularity ~ year + explicit,
+               data = train_lm)
+
+summary(model_2b)
+```
+
+```{r}
+model_2c <- lm(popularity ~ year + danceability,
+              data = train_lm)
+
+summary(model_2c)
+```
+
+```{r}
+model_4a <- lm(popularity ~ year + danceability + loudness + liveness,
+               data = train_lm)
+
+summary(model_4a)
+```
+
+
+# Stop at model 5a as the r^2 value barely moves and adjusted r^2 changes
+```{r}
+model_5a <- lm(popularity ~ year + danceability + loudness + liveness + explicit,
+               data = train_lm)
+
+summary(model_5a)
+```
+
+```{r}
+anova(model_5a, model_4a)
+``` 
+ 
+```{r}
+model_6a <- lm(popularity ~ year + danceability + loudness + liveness + explicit + decade:explicit,
+               data = train_lm)
+
+summary(model_6a)
+``` 

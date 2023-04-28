@@ -1,0 +1,260 @@
+---
+title: "Spotify Analysis"
+output: html_notebook
+---
+(does genre have an impact
+run model on before or after adding genre
+compare before and after on the same data)
+
+```{r include=FALSE}
+library(spotifyr)
+library(tidyverse)
+library(modelr)
+library(infer)
+library(modelr)
+library(ggfortify)
+library(GGally)
+```
+
+```{r include=FALSE}
+spotify_data_clean_join <- read_csv("clean_data/spotify_clean_join.csv")
+spotify_data <- read_csv("raw_data/spotify_data.csv")
+```
+
+
+### Question
+
+What (audio features) makes a song popular, and has that changed over time?
+
+### Intro
+
+I plan to answer the question, what makes a song on spotify "popular" and how does that change over time. 
+
+For this project I have used a combination of Spotify datasets available on Kaggle, taken from the Spotify Web API. The original dataset contains just under 170,000 rows with 19 column. I have then joined this with another dataset which gave me information on "genres" and "followers". (and time signature) Each row in the dataset represents 1 song, information about that song and many of it's audio features.
+
+I have used RStudio for this project as I found it excellent for model building.
+
+I had no issues surrounding the ethics of using or presenting this data. I had to get authentication to use the Spotify web api but it is readily available for people to view and analyse.
+
+### The Variables
+
+Basic Info
+artists <chr> - the artist or artists who appears on the track
+track_name <chr> - name of the song
+track_id <chr> - a distinct id to represent the song
+year <date> - year the track was released
+duration_sec <dbl> - duration of the track in seconds
+genres <str> - genre of the track, which I have manually aggregated
+followers <dbl> - number of followers the artists has
+key <fctr> - the key of the song  0-11
+mode <fctr> - major or minor key
+time_signature <fctr> - time signature of the song
+tempo <dbl> - overall tempo of the track in BPM
+explicit <fct> - does the track contain explicit content
+
+decade <date> - decade of release
+no_of_artists <dbl> - the number of artists appearing on each track
+is_popular <lgl> - is the popularity rating 50 or over
+
+All on a scale of 0 - 100
+ - acousticness <dbl> - a measure of how acoustic the track is (was it recorded in a live setting or studio)
+
+ - danceability <dbl> - how suitable is the track for dancing, based on rhythm stability, tempo and beat strength.
+
+- energy - measures the intensity and activity level
+
+- instrumentalness - measures how much vocals there are in a track. The higher the number, the less vocals in the track
+
+- liveness - detects the presence of an audience in the recording. The higher the liveness the higher the probability it was recorded live.
+
+- loudness - the overall loudness of a track. Originally in db, scaled to match the other audio features.
+
+- speechiness - measures the presence of spoken word in a track. The closer to 100, the more exclusively speech-like the recording. Rap has higher score than folk.
+
+- valence - the higher the value the more positive a track sounds(e.g. happy, cheerful). The lower the score the more negative it sounds (e.g. sad, angry)
+
+- popularity -  the popularity is calculated by spotify algorithm and is based, in the most part, on the total number of plays the track has had and how recent those plays are.
+
+
+## Hypothesis Tests on Audio Features
+
+Two sample - independent tests
+
+Independent here means that there is no reason to believe that observations in the two samples can be paired in any way. (i.e. there's no reason to believe the danceability in the 60s is the same as the 2010s)
+
+By randomly shuffling (i.e. permuting) the decade labels we lose any relationship that there was between decade and danceability. Think of this shuffling as detaching the labels from rows and then randomly assigning them back to rows. Then we see which of the following occurs:
+
+If there was no relationship in the first place (i.e. they are in fact independent) then randomly shuffling them should have no implication.
+If the difference between groups in our sample is much larger than the difference once the labels are shuffled it’s because there is a real difference between the groups, and it’s not just down to sampling variation.
+
+This is an example of the hypothesis tests which were carried out on each audio feature.
+
+H0: The mean danceability in 1960s is the same as the mean danceability in 2010s
+
+Ha: The mean danceability in 1960s is less than the mean danceability in 2010s
+
+H0: The difference in means in 0
+Ha: danceability2020 - danceability1960 > 0
+```{r include=FALSE}
+dance_decade_hyp <- spotify_data_clean_join %>% 
+  select(decade, danceability) %>% 
+  filter(decade == 1960 | decade == 2010) %>% 
+  mutate(decade = as.factor(decade))
+
+null_distribution <- dance_decade_hyp %>% 
+  specify(danceability ~ decade) %>% 
+  hypothesize(null = "independence") %>% 
+  generate(reps = 5000, type = "permute") %>% 
+  calculate(stat = "diff in means", order = c("2010", "1960")) 
+
+observed_stat <- dance_decade_hyp %>% 
+  specify(danceability ~ decade) %>%
+  calculate(stat = "diff in means", order = c("2010", "1960"))
+
+null_distribution %>%
+  visualise() +
+  shade_p_value(obs_stat = observed_stat, direction = "right")
+
+p_value <- null_distribution %>%
+  get_p_value(obs_stat = observed_stat, direction = "right")
+```
+
+### How do the audio features change over time
+
+```{r}
+spotify_data_clean_pivot <- spotify_data_clean_join %>% 
+  pivot_longer(cols = acousticness:valence,
+              names_to = "audio_feature",
+              values_to = "value") %>% 
+  group_by(year, audio_feature) %>% 
+  mutate(avg_feature = mean(value))
+```
+
+
+Plot with all Audio Features
+```{r}
+spotify_data_clean_pivot %>%
+  ggplot() +
+  aes(x = year, y = avg_feature, group = audio_feature, 
+      colour = audio_feature) +
+  geom_line(linewidth = 1) +
+  ylim(0, 100) +
+  labs(x = "Year",
+       y = "Value",
+       title = "Audio Features Over Time",
+       subtitle = "Avg per year",
+       colour = "Audio Feature") +
+  theme_bw()
+```
+
+Plot with audio features showing change
+```{r}
+spotify_data_clean_pivot %>%
+    filter(audio_feature == "acousticness" |
+           audio_feature == "instrumentalness" |
+           audio_feature == "danceability" |
+           audio_feature == "energy" |
+           audio_feature == "loudness") %>% 
+  ggplot() +
+  aes(x = year, y = avg_feature, group = audio_feature, 
+      colour = audio_feature) +
+  geom_line(linewidth = 1) +
+  ylim(0, 100) +
+  labs(x = "Year",
+       y = "Value",
+       title = "Audio Features Over Time",
+       subtitle = "Avg per year",
+       colour = "Audio Feature") +
+  theme_bw()
+```
+
+```{r}
+spotify_data_clean_join %>% 
+  group_by(year) %>% 
+  summarise(total_ex = sum(explicit)) %>% 
+  ggplot() +
+  aes(x = year, y = total_ex / 20) +
+  geom_col(fill = "red4") +
+  ylim(0, 50) +
+  labs(x = "Year",
+       y = "Proportion",
+       title = "Proportion of Explicit Songs",
+       subtitle = "by year") +
+  theme_bw()
+```
+
+
+### Intro To Linear Regression
+
+To help me answer my question of what makes a song "popular" on spotify, I decided to build an explanatory linear regression model. 
+
+This type of analysis is used to determine the strength of the relationship between a response variable y and multiple explanatory variables.
+
+So in this case I will be using all of the variables I have just discussed to explain the popularity of a song on spotify.
+
+y = b0 + b1x1 + b2x2 + b3x3....bnxn
+
+popularity = b0 + b1x1 + b2x2 + b3x3....bnxn
+
+To start this process I plot popularity against each one of my variables or possible explanatory variables and find the strongest correlation.
+
+```{r}
+n_data <- nrow(spotify_data_for_modelling)
+
+sample_index <- sample(1:n_data, size = n_data*0.2)
+
+spot_sample <- slice(spotify_data_for_modelling, sample_index)
+
+spot_sample %>% 
+  ggplot() +
+  aes(x = year, y = popularity) +
+  geom_point(alpha = 0.7, colour = "red4") +
+  geom_smooth(method = "lm", se = FALSE)
+```
+
+My strongest correlation was year (the year the track was released) with a correlation of 0.74. I then add this to my model as my first explanatory variable.
+
+```{r}
+model_1a <- lm(popularity ~ year,
+               data = train_lm)
+
+summary(model_1a)
+```
+
+After running my model I'm looking at 3 factors:
+ - The P-value - is this variable making a significant difference
+ - The R^2 - is a measure that indicates how much of the variation of popularity is explained by the year
+ - The adjusted R^2 - compensates for the addition of variables. So as we're building an explanatory model, we don't want this to drop much lower than the r^2.
+
+```{r}
+model_3a <- lm(popularity ~ year + danceability + loudness,
+               data = train_lm)
+
+summary(model_3a)
+```
+
+```{r}
+model_3b <- lm(popularity ~ year + danceability + instrumentalness,
+               data = train_lm)
+
+summary(model_3b)
+```
+
+```{r}
+anova(model_3a, model_2c)
+```
+
+Final Model
+
+```{r}
+model_6a <- lm(popularity ~ year + danceability + loudness + liveness + explicit,
+               data = train_lm)
+
+summary(model_6a)
+``` 
+
+
+
+
+
+
