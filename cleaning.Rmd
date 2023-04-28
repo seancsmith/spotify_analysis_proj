@@ -132,5 +132,6 @@ spotify_genres_modelling <- spotify_genres_small %>%
 
 write_csv(spotify_genres_small, "clean_data/spotify_genres_small.csv")
 
+write_csv(spotify_genres_modelling, "clean_data/spotify_genres_modelling.csv")
 ```
 

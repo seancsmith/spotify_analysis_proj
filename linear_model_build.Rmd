@@ -165,3 +165,12 @@ model_6a <- lm(popularity ~ year + danceability + loudness + liveness + explicit
 
 summary(model_6a)
 ``` 
+
+```{r}
+model_genres <- lm(popularity ~ year + danceability + loudness + liveness + followers, 
+                   data = spotify_genres_modelling)
+
+summary(model_genres)
+```
+
+
