@@ -173,4 +173,10 @@ model_genres <- lm(popularity ~ year + danceability + loudness + liveness + foll
 summary(model_genres)
 ```
 
+```{r}
+spotify_genres_modelling %>% 
+  ggplot() +
+  aes(x = top_genres, y = popularity) +
+  geom_boxplot()
+```
 
