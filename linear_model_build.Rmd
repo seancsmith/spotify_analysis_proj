@@ -11,6 +11,7 @@ library(infer)
 library(modelr)
 library(ggfortify)
 library(GGally)
+library(mosaic)
 ```
 
 ```{r include=FALSE}
@@ -32,6 +33,9 @@ train_lm <- slice(spotify_data_for_modelling, -test_index)
 test_lm <- slice(spotify_data_for_modelling, test_index)
 
 options(scipen = 999)
+
+alias(popularity ~ ., 
+      data = train_lm)
 ```
 
 
@@ -63,8 +67,8 @@ spot_sample %>%
 
 spot_sample %>% 
   ggplot() +
-  aes(x = year, y = popularity) +
-  geom_point(alpha = 0.7, colour = "red4") +
+  aes(x = year, y = popularity, colour = explicit) +
+  geom_point(alpha = 0.7, colour = "grey40") +
   geom_smooth(method = "lm", se = FALSE)
 
 res <- cor.test(spotify_data_for_modelling$popularity, spotify_data_for_modelling$year, 
@@ -86,6 +90,8 @@ model_1a <- lm(popularity ~ year,
                data = train_lm)
 
 summary(model_1a)
+
+plotModel(model_1a)
 ```
 
 

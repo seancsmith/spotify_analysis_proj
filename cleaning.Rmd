@@ -100,6 +100,7 @@ spotify_data_clean_join <- spotify_data_clean %>%
          genres = if_else(str_detect(genres, "[m][e][x][i][c][a][n]"), "mexican", genres)) %>% 
   mutate(#year = ymd(paste0(year, "-01-01")),
          #decade = ymd(paste0(decade, "-01-01")),
+        #explicit = as.factor(explicit),
          time_signature = as.factor(time_signature)) %>% 
   select(-release_date)
 

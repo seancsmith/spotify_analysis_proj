@@ -5,6 +5,7 @@ output: html_notebook
 (does genre have an impact
 run model on before or after adding genre
 compare before and after on the same data)
+considerations and limitations - geared towards younger people
 
 ```{r include=FALSE}
 library(spotifyr)
@@ -73,7 +74,7 @@ All on a scale of 0 - 100
 
 - valence - the higher the value the more positive a track sounds(e.g. happy, cheerful). The lower the score the more negative it sounds (e.g. sad, angry)
 
-- popularity -  the popularity is calculated by spotify algorithm and is based, in the most part, on the total number of plays the track has had and how recent those plays are.
+### popularity -  Spotify -  "The popularity of a track is a value between 0 and 100, with 100 being the most popular. The popularity is calculated by algorithm and is based, in the most part, on the total number of plays the track has had and how recent those plays are."
 
 
 ## Hypothesis Tests on Audio Features
@@ -170,6 +171,7 @@ spotify_data_clean_pivot %>%
 
 ```{r}
 spotify_data_clean_join %>% 
+  #mutate(explicit = as.numeric(explicit)) %>% 
   group_by(year) %>% 
   summarise(total_ex = sum(explicit)) %>% 
   ggplot() +
@@ -182,6 +184,13 @@ spotify_data_clean_join %>%
        subtitle = "by year") +
   theme_bw()
 ```
+```{r}
+spot_sample %>% 
+  ggplot() +
+  aes(x = danceability, y = popularity) +
+  geom_point() +
+  geom_smooth(method = "lm")
+```
 
 
 ### Intro To Linear Regression
@@ -190,7 +199,7 @@ To help me answer my question of what makes a song "popular" on spotify, I decid
 
 This type of analysis is used to determine the strength of the relationship between a response variable y and multiple explanatory variables.
 
-So in this case I will be using all of the variables I have just discussed to explain the popularity of a song on spotify.
+So in this case I will be choosing from all of the variables I have just discussed to explain the popularity of a song on spotify.
 
 y = b0 + b1x1 + b2x2 + b3x3....bnxn
 
@@ -222,7 +231,8 @@ summary(model_1a)
 ```
 
 After running my model I'm looking at 3 factors:
- - The P-value - is this variable making a significant difference
+ - The P-value - is this variable making a significant difference. If the P-value is below the significance level of 0.05 then we can reject the null hypothesis and conclude that changes in the 
+ 
  - The R^2 - is a measure that indicates how much of the variation of popularity is explained by the year
  - The adjusted R^2 - compensates for the addition of variables. So as we're building an explanatory model, we don't want this to drop much lower than the r^2.
 
@@ -253,6 +263,35 @@ model_6a <- lm(popularity ~ year + danceability + loudness + liveness + explicit
 summary(model_6a)
 ``` 
 
+So here we have our final model. I stopped adding variables as the Adjusted r^2 started dropping and our multiple r^2 was barely going up.
+
+So we can see that the more recent the release, the more danceability, the louder it is, the less liveness it has. So you don't want a live recording, you want a studio recording with some explicit lyrics chucked in there as well.
+
+All of our P-Values are significant and we have a Multiple r^2 of 0.55, with an adjusted r^2 also of 0.55. This means that 55% of the variance in popularity is explained our other variables. Which  also means that 45% of the variability in the data cannot be explained by this model.
+
+55% isn't a very high proportion but it's not terrible. We are trying to measure the popularity of a song. It's not quite as obvious as if we were trying to explain the value of a house. We might find that the postcode and the number of rooms goes a long way to explaining that value. I think explaining the popularity of a song is bit more complicated than that. If it was easy to know what made a song popular then we'd all be musicians.
+
+Mention human behaviour, mention the basic practice of statistics would call this a moderate effect size. 
+
+
+```{r}
+model_6b <- lm(popularity ~ year + danceability + loudness + liveness + explicit,
+               data = test_lm)
+
+summary(model_6b)
+
+``` 
+
+So my model isn't great. What can I do to improve this? Well...
+
+When I was researching how spotify calculate their popularity score I kept coming across this one phrase.
+
+### 50 is the magic number
+
+
+while the Popularity Index is majorly determined by recent stream count, other factors like save rate, the number of playlists, skip rate, and share rate can indirectly bump up or push down a song’s popularity index. The higher your popularity index, the more likely the algorithm is to recommend you to new listeners, and place you in algorithmic playlists like Release Radar and Discover Weekly. 
+
+Oscar Wilde is famously credited with having written: “Popularity is the one insult I have never suffered.”
 
 
 

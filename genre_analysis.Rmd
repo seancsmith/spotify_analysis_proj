@@ -1,0 +1,54 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(spotifyr)
+library(tidyverse)
+```
+
+
+```{r include=FALSE}
+spotify_data_clean_join <- read_csv("clean_data/spotify_clean_join.csv")
+spotify_data <- read_csv("raw_data/spotify_data.csv")
+spotify_genres_small <- read_csv("clean_data/spotify_genres_small.csv")
+```
+
+
+```{r}
+spotify_data_clean_join %>% 
+  drop_na() %>% 
+  group_by(decade) 
+```
+
+```{r}
+top_genres <- spotify_data_clean_join %>% 
+  count(genres) %>% 
+  drop_na() %>% 
+  arrange(desc(n)) %>% 
+  head(5) %>% 
+  pull(genres)
+```
+
+```{r}
+spotify_data_clean_join %>% 
+  mutate(top_genres = if_else(genres %in% top_genres, genres, NA)) %>% 
+  drop_na(top_genres) %>%
+  group_by(decade) %>% 
+  mutate(genre_total = count(decade)) %>% 
+  group_by(decade, top_genres) %>% 
+  mutate(genre_prop = round((count(top_genres) / genre_total),2 ) * 100) %>% 
+  ggplot() +
+  aes(x = decade, y = genre_prop, colour = top_genres) +
+  geom_line(linewidth = 1) +
+  labs(x = "Decade",
+       y = "Percentage",
+       colour = "Top 5 Genres") +
+  theme_classic()
+```
+
+```{r}
+model_genre <- lm(popularity ~ ., data = spotify_genres_small)
+```
+
