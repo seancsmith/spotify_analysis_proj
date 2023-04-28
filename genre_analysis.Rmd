@@ -6,6 +6,7 @@ output: html_notebook
 ```{r}
 library(spotifyr)
 library(tidyverse)
+library(modelr)
 ```
 
 
@@ -49,6 +50,6 @@ spotify_data_clean_join %>%
 ```
 
 ```{r}
-model_genre <- lm(popularity ~ ., data = spotify_genres_small)
+
 ```
 

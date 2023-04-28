@@ -108,3 +108,29 @@ write_csv(spotify_data_clean_join, "clean_data/spotify_clean_join.csv")
 ```
 
 
+```{r}
+top_genres <- spotify_data_clean_join %>% 
+  count(genres) %>% 
+  drop_na() %>% 
+  arrange(desc(n)) %>% 
+  head(10) %>% 
+  pull(genres)
+
+spotify_genres_small <- spotify_data_clean_join %>% 
+  mutate(top_genres = if_else(genres %in% top_genres, genres, NA)) %>% 
+  drop_na(top_genres) %>% 
+  select(-genres)
+
+spotify_genres_modelling <- spotify_genres_small %>% 
+  mutate(top_genres = as.factor(top_genres),
+         explicit = as.logical(explicit),
+         key = as.factor(key),
+         mode = as.factor(mode),
+         decade = as.factor(decade)
+         ) %>% 
+  select(-c(artists, track_name, id))
+
+write_csv(spotify_genres_small, "clean_data/spotify_genres_small.csv")
+
+```
+
