@@ -103,7 +103,7 @@ spotify_data_clean_join <- spotify_data_clean %>%
          time_signature = as.factor(time_signature)) %>% 
   select(-release_date)
 
-#write_csv(spotify_data_clean_join, "clean_data/spotify_clean_join.csv")
+write_csv(spotify_data_clean_join, "clean_data/spotify_clean_join.csv")
 ```
 
 
