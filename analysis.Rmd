@@ -228,7 +228,7 @@ To start this process I plot popularity against each one of my variables or poss
 ```{r}
 n_data <- nrow(spotify_data_for_modelling)
 
-sample_index <- sample(1:n_data, size = n_data*0.2)
+sample_index <- sample(1:n_data, size = n_data*0.02)
 
 spot_sample <- slice(spotify_data_for_modelling, sample_index)
 
@@ -308,12 +308,65 @@ When I was researching how spotify calculate their popularity score I kept comin
 
 The higher your popularity index, the more likely the algorithm is to recommend you to new listeners, and place you in algorithmic playlists like Release Radar and Discover Weekly. Many websites and blogs had theories on what number you had to hit to be added to certain editorial playlists. 
 
-DIYMusician suggests that and popularity of 20+ in the first few weeks of release will get you onto the Release Radar playlist and a popularity score of 30+ will get you onto Discover Weekly. Loudlab suggested that 50 is the magic number. I liked this idea of having a threshold of whether or not a song is popular, and it lends itself nicely to logistic regression. So going back to my variables I created a column called is_popular which is only TRUE if the popularity of the song is 50 or over.
+DIYMusician suggests that and popularity of 20+ in the first few weeks of release will get you onto the Release Radar playlist and a popularity score of 30+ will get you onto Discover Weekly. Loudlab suggested that 50 is the magic number. I liked this idea of having a threshold of whether or not a song is popular. So going back to my variables I created a column called is_popular which is only TRUE if the popularity of the song is 50 or over. This also lends itself nicely to a logistic regression model. 
 
+Logistic regression is a statistical analysis method to predict, or explain a binary outcome, such as yes or no, based on prior observations of a data set.
+
+So rather than using the popularity score I have used the variable I created called is_popular, which splits the data in to a logical type, so it's TRUE if the song is 50 or above.
+
+The way this is build is very similar to the linear model. I look for correlations, and I add them to my model 1 at a time. The main difference is that I'm looking for for a high AUC score this time, rather than the multiple r^squared I was looking for in the linear model.
+
+I'll explain the AUC in a second. I decided for this model to make a couple of changes. I decided to no longer include the year or decade the song was released. If I'm staying true to my original question then how could I possibly write a song that was released in the past. It had such a large influence on the linear model I thought it would be more interesting to see it without. And then I could test my model against different decades to see how it performs. 
+
+ 
 
 Oscar Wilde is famously credited with having written: “Popularity is the one insult I have never suffered.”
 
+```{r}
+spot_sample %>% 
+  mutate(explicit = as.logical(explicit)) %>% 
+  ggplot() +
+  aes(x = loudness, y = popularity, colour = explicit) +
+  geom_point(alpha = 0.8) +
+  geom_smooth(method = "lm", se = FALSE) +
+  labs(x = "Loudness",
+       y = "Popularity",
+       title = "Relationship between Popularity and Loundess",
+       subtitle = "Grouped by explicit or not") +
+    scale_colour_brewer(palette =  "Dark2") +
+  theme_bw() +
+  theme(axis.text  = element_text(face = "bold", size = 15, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 15, family = "Times"),
+        title = element_text(face = "bold", size = 15, family = "Times"),
+        legend.text = element_text(face = "bold", size = 10, family = "Times")
+  ) 
+```
 
 
+```{r}
+spot_sample %>% 
+  mutate(explicit = as.logical(explicit)) %>%
+ggplot() +
+  aes(x = loudness, y = as.integer(is_popular), colour = explicit) +
+  geom_jitter(shape = 1,
+              position = position_jitter(h = 0.05, w = 0.05),
+              alpha = 0.8) +
+   geom_line(data = train_model_1_loud, aes(x = loudness , y = pred), col = 'red') +
+  ylab("Probability") +
+      scale_colour_brewer(palette =  "Dark2") +
+  theme_bw() +
+  theme(axis.text  = element_text(face = "bold", size = 15, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 15, family = "Times"),
+        title = element_text(face = "bold", size = 15, family = "Times"),
+        legend.text = element_text(face = "bold", size = 10, family = "Times")
+  ) 
+
+
+# ggplot(mortgage_data) +
+#   geom_jitter(aes(x = tu_score, y = as.integer(accepted)), shape = 1, 
+#               position = position_jitter(h = 0.03)) + 
+#    geom_line(data = predict_log, aes(x = tu_score , y = pred), col = 'red') + 
+#   ylab("Probability")
+```
 
 

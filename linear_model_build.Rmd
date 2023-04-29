@@ -22,6 +22,8 @@ spotify_genres_modelling <- read_csv("clean_data/spotify_genres_modelling.csv")
 
 ```{r}
 spotify_data_for_modelling <- spotify_data_clean_join %>% 
+  mutate(decade = as.factor(decade),
+         time_signature = as.factor(time_signature)) %>% 
   select(-c(artists, track_name, id, genres, followers))
 ```
 
@@ -56,7 +58,7 @@ train %>%
 ```{r}
 n_data <- nrow(spotify_data_for_modelling)
 
-sample_index <- sample(1:n_data, size = n_data*0.2)
+sample_index <- sample(1:n_data, size = n_data*0.5)
 
 spot_sample <- slice(spotify_data_for_modelling, sample_index)
 

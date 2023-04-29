@@ -43,8 +43,7 @@ spotify_data_clean <- spotify_data %>%
          duration_sec = duration_sec / 1000,
          no_of_artists = 1 + str_count(artists, ","),
          is_popular = if_else(popularity >= 50, TRUE, FALSE)) %>% 
-  filter(year >= 1960 &
-          year < 2020) %>% 
+  filter(year >= 1960) %>% 
   mutate(decade = case_when(
     year >= 1950 & year < 1960 ~ 1950,
     year >= 1960 & year < 1970 ~ 1960,
