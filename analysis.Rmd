@@ -145,7 +145,13 @@ spotify_data_clean_pivot %>%
        title = "Audio Features Over Time",
        subtitle = "Avg per year",
        colour = "Audio Feature") +
-  theme_bw()
+  theme_bw() +
+  scale_colour_brewer(palette =  "Dark2") +
+  theme(axis.text  = element_text(face = "bold", size = 15, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 15, family = "Times"),
+        title = element_text(face = "bold", size = 15, family = "Times"),
+        legend.text = element_text(face = "bold", size = 10, family = "Times")
+  ) 
 ```
 
 Plot with audio features showing change
@@ -159,14 +165,21 @@ spotify_data_clean_pivot %>%
   ggplot() +
   aes(x = year, y = avg_feature, group = audio_feature, 
       colour = audio_feature) +
-  geom_line(linewidth = 1) +
+  geom_line(linewidth = 2) +
   ylim(0, 100) +
   labs(x = "Year",
        y = "Value",
-       title = "Audio Features Over Time",
+       title = "Audio Features by Release Year",
        subtitle = "Avg per year",
        colour = "Audio Feature") +
-  theme_bw()
+  theme_bw() +
+  scale_colour_brewer(palette =  "Dark2") +
+  theme(axis.text  = element_text(face = "bold", size = 15, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 15, family = "Times"),
+        title = element_text(face = "bold", size = 15, family = "Times"),
+        legend.text = element_text(face = "bold", size = 10, family = "Times")
+  ) 
+
 ```
 
 ```{r}
@@ -179,10 +192,15 @@ spotify_data_clean_join %>%
   geom_col(fill = "red4") +
   ylim(0, 50) +
   labs(x = "Year",
-       y = "Proportion",
-       title = "Proportion of Explicit Songs",
+       y = "Percentage",
+       title = "Percentage of Explicit Songs",
        subtitle = "by year") +
-  theme_bw()
+  theme_bw() +
+  theme(axis.text  = element_text(face = "bold", size = 15, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 15, family = "Times"),
+        title = element_text(face = "bold", size = 15, family = "Times"),
+        legend.text = element_text(face = "bold", size = 10, family = "Times")
+  ) 
 ```
 ```{r}
 spot_sample %>% 

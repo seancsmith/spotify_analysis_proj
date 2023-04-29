@@ -17,11 +17,7 @@ spotify_genres_small <- read_csv("clean_data/spotify_genres_small.csv")
 ```
 
 
-```{r}
-spotify_data_clean_join %>% 
-  drop_na() %>% 
-  group_by(decade) 
-```
+
 
 ```{r}
 top_genres <- spotify_data_clean_join %>% 
@@ -46,7 +42,14 @@ spotify_data_clean_join %>%
   labs(x = "Decade",
        y = "Percentage",
        colour = "Top 5 Genres") +
-  theme_classic()
+  theme_classic() +
+  scale_colour_brewer(palette =  "Dark2") +
+  theme(axis.text  = element_text(face = "bold", size = 15, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 15, family = "Times"),
+        title = element_text(face = "bold", size = 15, family = "Times"),
+        legend.text = element_text(face = "bold", size = 10, family = "Times")
+  ) 
+
 ```
 
 ```{r}
