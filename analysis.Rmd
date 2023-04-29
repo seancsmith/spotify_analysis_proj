@@ -306,8 +306,10 @@ When I was researching how spotify calculate their popularity score I kept comin
 
 ### 50 is the magic number
 
+The higher your popularity index, the more likely the algorithm is to recommend you to new listeners, and place you in algorithmic playlists like Release Radar and Discover Weekly. Many websites and blogs had theories on what number you had to hit to be added to certain editorial playlists. 
 
-while the Popularity Index is majorly determined by recent stream count, other factors like save rate, the number of playlists, skip rate, and share rate can indirectly bump up or push down a song’s popularity index. The higher your popularity index, the more likely the algorithm is to recommend you to new listeners, and place you in algorithmic playlists like Release Radar and Discover Weekly. 
+DIYMusician suggests that and popularity of 20+ in the first few weeks of release will get you onto the Release Radar playlist and a popularity score of 30+ will get you onto Discover Weekly. Loudlab suggested that 50 is the magic number. I liked this idea of having a threshold of whether or not a song is popular, and it lends itself nicely to logistic regression. So going back to my variables I created a column called is_popular which is only TRUE if the popularity of the song is 50 or over.
+
 
 Oscar Wilde is famously credited with having written: “Popularity is the one insult I have never suffered.”
 
