@@ -22,8 +22,8 @@ spotify_genres_modelling <- read_csv("clean_data/spotify_genres_modelling.csv")
 
 ```{r}
 spotify_data_for_modelling <- spotify_data_clean_join %>% 
-  mutate(decade = as.factor(decade),
-         time_signature = as.factor(time_signature)) %>% 
+  mutate(decade = as.factor(decade)) %>% 
+         #time_signature = as.factor(time_signature)) %>% 
   select(-c(artists, track_name, id, genres, followers))
 ```
 

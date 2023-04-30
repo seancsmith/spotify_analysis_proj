@@ -31,7 +31,7 @@ What (audio features) makes a song popular, and has that changed over time?
 
 I plan to answer the question, what makes a song on spotify "popular" and how does that change over time. 
 
-For this project I have used a combination of Spotify datasets available on Kaggle, taken from the Spotify Web API. The original dataset contains just under 170,000 rows with 19 column. I have then joined this with another dataset which gave me information on "genres" and "followers". (and time signature) Each row in the dataset represents 1 song, information about that song and many of it's audio features.
+For this project I have used a combination of Spotify datasets available on Kaggle, taken from the Spotify Web API. The original dataset contains just under 170,000 rows with 19 columns. I have then joined this with another dataset which gave me information on "genres" and "followers". (and time signature) Each row in the dataset represents 1 song, information about that song and many of it's audio features.
 
 I have used RStudio for this project as I found it excellent for model building.
 
@@ -45,8 +45,6 @@ track_name <chr> - name of the song
 track_id <chr> - a distinct id to represent the song
 year <date> - year the track was released
 duration_sec <dbl> - duration of the track in seconds
-genres <str> - genre of the track, which I have manually aggregated
-followers <dbl> - number of followers the artists has
 key <fctr> - the key of the song  0-11
 mode <fctr> - major or minor key
 time_signature <fctr> - time signature of the song
@@ -55,7 +53,10 @@ explicit <fct> - does the track contain explicit content
 
 decade <date> - decade of release
 no_of_artists <dbl> - the number of artists appearing on each track
+followers - 
+genre - 
 is_popular <lgl> - is the popularity rating 50 or over
+
 
 All on a scale of 0 - 100
  - acousticness <dbl> - a measure of how acoustic the track is (was it recorded in a live setting or studio)
@@ -134,11 +135,11 @@ spotify_data_clean_pivot <- spotify_data_clean_join %>%
 
 Plot with all Audio Features
 ```{r}
-spotify_data_clean_pivot %>%
+audiot_features_all <- spotify_data_clean_pivot %>%
   ggplot() +
   aes(x = year, y = avg_feature, group = audio_feature, 
       colour = audio_feature) +
-  geom_line(linewidth = 1) +
+  geom_line(linewidth = 2) +
   ylim(0, 100) +
   labs(x = "Year",
        y = "Value",
@@ -152,15 +153,17 @@ spotify_data_clean_pivot %>%
         title = element_text(face = "bold", size = 15, family = "Times"),
         legend.text = element_text(face = "bold", size = 10, family = "Times")
   ) 
+
+#ggsave(audiot_features_all, "plot_images/audio_features_all.png")
 ```
 
 Plot with audio features showing change
 ```{r}
-spotify_data_clean_pivot %>%
+audio_features_cut <- spotify_data_clean_pivot %>%
     filter(audio_feature == "acousticness" |
            audio_feature == "instrumentalness" |
            audio_feature == "danceability" |
-           audio_feature == "energy" |
+           audio_feature == "speechiness" |
            audio_feature == "loudness") %>% 
   ggplot() +
   aes(x = year, y = avg_feature, group = audio_feature, 
@@ -174,12 +177,15 @@ spotify_data_clean_pivot %>%
        colour = "Audio Feature") +
   theme_bw() +
   scale_colour_brewer(palette =  "Dark2") +
-  theme(axis.text  = element_text(face = "bold", size = 15, family = "Times"),
-        axis.title  = element_text(face = "bold", size = 15, family = "Times"),
-        title = element_text(face = "bold", size = 15, family = "Times"),
-        legend.text = element_text(face = "bold", size = 10, family = "Times")
+  theme(axis.text  = element_text(face = "bold", size = 18, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 18, family = "Times"),
+        title = element_text(face = "bold", size = 18, family = "Times"),
+        legend.text = element_text(face = "bold", size = 14, family = "Times")
   ) 
 
+ggsave("plot_images/audio_features_cut.png", dpi = 720, width = 12, height = 6)
+
+?ggsave
 ```
 
 ```{r}
@@ -189,33 +195,72 @@ spotify_data_clean_join %>%
   summarise(total_ex = sum(explicit)) %>% 
   ggplot() +
   aes(x = year, y = total_ex / 20) +
-  geom_col(fill = "red4") +
+  geom_line(colour = "red", linewidth = 2) +
   ylim(0, 50) +
   labs(x = "Year",
-       y = "Percentage",
-       title = "Percentage of Explicit Songs",
+       y = "Proportion",
+       title = "Proportion of Explicit Songs",
        subtitle = "by year") +
   theme_bw() +
-  theme(axis.text  = element_text(face = "bold", size = 15, family = "Times"),
-        axis.title  = element_text(face = "bold", size = 15, family = "Times"),
-        title = element_text(face = "bold", size = 15, family = "Times"),
-        legend.text = element_text(face = "bold", size = 10, family = "Times")
+  theme(axis.text  = element_text(face = "bold", size = 18, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 18, family = "Times"),
+        title = element_text(face = "bold", size = 18, family = "Times"),
+        legend.text = element_text(face = "bold", size = 14, family = "Times")
   ) 
+
+ggsave("plot_images/explicit.png", dpi = 720, width = 10, height = 6)
 ```
 ```{r}
 spot_sample %>% 
   ggplot() +
-  aes(x = danceability, y = popularity) +
+  aes(x = danceability, y = popularity, colour = explicit) +
   geom_point() +
   geom_smooth(method = "lm")
 ```
 
+```{r}
+spot_sample %>% 
+  ggplot() +
+  aes(x = danceability, y = popularity) +
+  geom_point(colour = "#1DB954", alpha = 0.8) +
+  geom_smooth(method = "lm", se = FALSE, colour = "purple3", linewidth = 2) +
+  labs(x = "Danceability",
+       y = "Popularity") +
+       theme_classic() +
+  theme(axis.text  = element_text(face = "bold", size = 18, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 20, family = "Times"),
+        title = element_text(face = "bold", size = 18, family = "Times"),
+        legend.text = element_text(face = "bold", size = 14, family = "Times")
+  )
+
+#ggsave("plot_images/pop_vs_dance.png", dpi = 720, width = 10, height = 6)
+
+```
+
+```{r}
+spot_sample %>% 
+  ggplot() +
+  aes(x = loudness, y = popularity) +
+  geom_point(colour = "#1DB954", alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE, colour = "purple3", linewidth = 2) +
+  labs(x = "Loudness",
+       y = "Popularity") +
+       theme_classic() +
+  theme(axis.text  = element_text(face = "bold", size = 18, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 22, family = "Times"),
+        title = element_text(face = "bold", size = 18, family = "Times"),
+        legend.text = element_text(face = "bold", size = 14, family = "Times")
+  )
+
+ggsave("plot_images/pop_vs_loud.png", dpi = 720, width = 10, height = 6)
+
+```
 
 ### Intro To Linear Regression
 
 To help me answer my question of what makes a song "popular" on spotify, I decided to build an explanatory linear regression model. 
 
-This type of analysis is used to determine the strength of the relationship between a response variable y and multiple explanatory variables.
+This type of analysis is used to determine the strength of the relationship between a response variable and multiple explanatory variables.
 
 So in this case I will be choosing from all of the variables I have just discussed to explain the popularity of a song on spotify.
 
@@ -228,16 +273,35 @@ To start this process I plot popularity against each one of my variables or poss
 ```{r}
 n_data <- nrow(spotify_data_for_modelling)
 
-sample_index <- sample(1:n_data, size = n_data*0.02)
+sample_index <- sample(1:n_data, size = n_data*0.1)
 
 spot_sample <- slice(spotify_data_for_modelling, sample_index)
 
 spot_sample %>% 
   ggplot() +
   aes(x = year, y = popularity) +
+  geom_point(alpha = 0.7, colour = "#1DB954") +
+  geom_smooth(method = "lm", se = FALSE, colour = "purple2") +
+  theme_classic() +
+  labs(x = "Year",
+       y = "Popularity") +
+  theme(axis.text  = element_text(face = "bold", size = 18, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 18, family = "Times"),
+        title = element_text(face = "bold", size = 18, family = "Times"),
+        legend.text = element_text(face = "bold", size = 14, family = "Times")
+  )
+
+#ggsave("plot_images/pop_vs_dance.png", dpi = 720, width = 10, height = 6)
+```
+
+```{r}
+spot_sample %>% 
+  ggplot() +
+  aes(x = explicit, y = popularity) +
   geom_point(alpha = 0.7, colour = "red4") +
   geom_smooth(method = "lm", se = FALSE)
 ```
+
 
 My strongest correlation was year (the year the track was released) with a correlation of 0.74. I then add this to my model as my first explanatory variable.
 

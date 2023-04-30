@@ -102,7 +102,7 @@ spotify_data_clean_join <- spotify_data_clean %>%
          #decade = ymd(paste0(decade, "-01-01")),
         #explicit = as.factor(explicit),
          time_signature = as.factor(time_signature)) %>% 
-  select(-release_date)
+  select(-release_date, -time_signature)
 
 write_csv(spotify_data_clean_join, "clean_data/spotify_clean_join.csv")
 ```
