@@ -316,7 +316,7 @@ So rather than using the popularity score I have used the variable I created cal
 
 The way this is build is very similar to the linear model. I look for correlations, and I add them to my model 1 at a time. The main difference is that I'm looking for for a high AUC score this time, rather than the multiple r^squared I was looking for in the linear model.
 
-I'll explain the AUC in a second. I decided for this model to make a couple of changes. I decided to no longer include the year or decade the song was released. If I'm staying true to my original question then how could I possibly write a song that was released in the past. It had such a large influence on the linear model I thought it would be more interesting to see it without. And then I could test my model against different decades to see how it performs. 
+I'll explain the AUC in a second. I decided for this model to make a couple of changes. I decided to no longer include the year or decade the song was released. If I'm staying true to my original question then how could I possibly write a song that was released in the past. It had such a large influence on the linear model I thought it would be more interesting to see how the logistic model fared without it. And then I can test my model against different decades to see how it performs. 
 
  
 
@@ -370,3 +370,29 @@ ggplot() +
 ```
 
 
+Final Logistic Regression Model
+```{r}
+model_4_explicit <- glm(is_popular ~ loudness + explicit + danceability + energy + no_of_artists,
+             family = "binomial",
+             data = train_log_mod)
+
+summary(model_4_explicit)
+
+tidy(model_4_explicit)
+
+train_model_4_explicit <- train_log_mod %>%
+  add_predictions(model_4_explicit, type = "response")
+
+roc_obj_mod4 <- train_model_4_explicit %>%
+  roc(response = is_popular, predictor = pred)
+
+roc_curve <- ggroc(
+  data = list(
+    mod4 = roc_obj_mod4
+  ), 
+  legacy.axes = TRUE) +
+  coord_fixed() + 
+  theme_classic()
+
+auc(roc_obj_mod4)
+```

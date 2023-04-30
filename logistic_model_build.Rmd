@@ -5,6 +5,7 @@ output: html_notebook
 
 ```{r}
 library(spotifyr)
+library(janitor)
 library(tidyverse)
 library(purrr)
 library(ggfortify)
@@ -113,19 +114,27 @@ auc(roc_obj_mod3)
 
 Final Logistic Regression Model
 ```{r}
-model_4_explicit <- glm(is_popular ~ loudness + explicit + danceability + energy + no_of_artists,
+model_4_final <- glm(is_popular ~ loudness + explicit + danceability + energy + no_of_artists,
              family = "binomial",
              data = train_log_mod)
 
-summary(model_4_explicit)
+summary(model_4_final)
 
-tidy(model_4_explicit)
+tidy(model_4_final)
 
-train_model_4_explicit <- train_log_mod %>%
-  add_predictions(model_4_explicit, type = "response")
+train_model_4_final <- train_log_mod %>%
+  add_predictions(model_4_final, type = "response")
 
-roc_obj_mod4 <- train_model_4_explicit %>%
+roc_obj_mod4 <- train_model_4_final %>%
   roc(response = is_popular, predictor = pred)
+
+threshold <- 0.6
+train_model_4_final <- train_model_4_final %>%
+  mutate(pred_thresh_0.6 = pred >= threshold)
+
+conf_table <- train_model_4_final %>%
+  tabyl(is_popular, pred_thresh_0.6)
+conf_table
 
 roc_curve <- ggroc(
   data = list(
@@ -136,6 +145,13 @@ roc_curve <- ggroc(
 
 auc(roc_obj_mod4)
 ```
+
+
+```{r}
+(64737 + 1785) / 95920
+```
+
+
 
 Test how the final model performs over different decades
 
@@ -189,6 +205,7 @@ train_model_90_00_10 <- log_mod_1990 %>%
 roc_obj_mod_90_00_10 <- train_model_90_00_10 %>%
   roc(response = is_popular, predictor = pred)
 
+
 roc_curve <- ggroc(
   data = list(
     mod4 = roc_obj_mod4,
@@ -201,9 +218,12 @@ roc_curve <- ggroc(
 auc(roc_obj_mod_90_00_10)
 ```
 
+```{r}
+21549 + 1728 / 
+```
 
 
-
+Model with top 20 genres included
 ```{r}
 model_genres <- glm(is_popular ~ loudness + explicit + danceability + no_of_artists + energy + top_genres,
               family = "binomial",

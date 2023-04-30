@@ -113,7 +113,7 @@ top_genres <- spotify_data_clean_join %>%
   count(genres) %>% 
   drop_na() %>% 
   arrange(desc(n)) %>% 
-  head(10) %>% 
+  head(5) %>% 
   pull(genres)
 
 spotify_genres_small <- spotify_data_clean_join %>% 
@@ -123,12 +123,15 @@ spotify_genres_small <- spotify_data_clean_join %>%
 
 spotify_genres_modelling <- spotify_genres_small %>% 
   mutate(top_genres = as.factor(top_genres),
-         explicit = as.logical(explicit),
+         #explicit = as.logical(explicit),
          key = as.factor(key),
          mode = as.factor(mode),
          decade = as.factor(decade)
          ) %>% 
   select(-c(artists, track_name, id))
+
+#spotify_genres_modelling %>% 
+  
 
 write_csv(spotify_genres_small, "clean_data/spotify_genres_small.csv")
 
@@ -142,7 +145,6 @@ track_text <- spotify_data_clean_join %>%
   unnest_tokens(word, track_name) %>% 
     inner_join(get_sentiments("bing"), by = "word") %>% 
   group_by(track_name)
-
 
 ```
 
