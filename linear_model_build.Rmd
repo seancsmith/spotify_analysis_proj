@@ -58,7 +58,7 @@ train %>%
 ```{r}
 n_data <- nrow(spotify_data_for_modelling)
 
-sample_index <- sample(1:n_data, size = n_data*0.5)
+sample_index <- sample(1:n_data, size = n_data*0.1)
 
 spot_sample <- slice(spotify_data_for_modelling, sample_index)
 
@@ -82,10 +82,9 @@ res <- cor.test(spotify_data_for_modelling$popularity, spotify_data_for_modellin
 REMOVE 2020?? Lots of popularity 0
 ```{r}
 spotify_data_for_modelling %>% 
-  filter(year == "2020-01-01") %>% 
   ggplot() +
   aes(x = popularity) +
-  geom_histogram()
+  geom_histogram(binwidth = 4)
 ```
 
 ```{r}
@@ -156,13 +155,19 @@ model_5a <- lm(popularity ~ year + danceability + loudness + liveness + explicit
 
 summary(model_5a)
 ```
+```{r}
+model_5a <- lm(popularity ~ year + danceability + loudness + liveness + explicit,
+               data = test_lm)
+
+summary(model_5a)
+```
 
 ```{r}
 anova(model_5a, model_4a)
 ``` 
  
 ```{r}
-model_6a <- lm(popularity ~ year + danceability + loudness + liveness + explicit + decade:explicit,
+model_6a <- lm(popularity ~ year + danceability + loudness + liveness + explicit + year:explicit
                data = train_lm)
 
 summary(model_6a)

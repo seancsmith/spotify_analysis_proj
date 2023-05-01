@@ -27,7 +27,7 @@ spotify_genres_modelling <- read_csv("clean_data/spotify_genres_modelling.csv")
 ```{r}
 n_data <- nrow(spotify_data_for_modelling)
 
-test_index <- sample(1:n_data, size = n_data*0.20)
+test_index <- sample(1:n_data, size = n_data*0.2)
 
 train_log_mod <- slice(spotify_data_for_modelling, -test_index)
 test_log_mod <- slice(spotify_data_for_modelling, test_index)
@@ -114,7 +114,7 @@ auc(roc_obj_mod3)
 
 Final Logistic Regression Model
 ```{r}
-model_4_final <- glm(is_popular ~ loudness + explicit + danceability + energy + no_of_artists,
+model_4_final <- glm(is_popular ~ loudness + explicit + danceability + no_of_artists,
              family = "binomial",
              data = train_log_mod)
 
@@ -128,7 +128,7 @@ train_model_4_final <- train_log_mod %>%
 roc_obj_mod4 <- train_model_4_final %>%
   roc(response = is_popular, predictor = pred)
 
-threshold <- 0.6
+threshold <- 0.5
 train_model_4_final <- train_model_4_final %>%
   mutate(pred_thresh_0.6 = pred >= threshold)
 
@@ -138,7 +138,7 @@ conf_table
 
 roc_curve <- ggroc(
   data = list(
-    mod4 = roc_obj_mod4
+    best_model = roc_obj_mod4
   ), 
   legacy.axes = TRUE) +
   coord_fixed()
@@ -148,7 +148,7 @@ auc(roc_obj_mod4)
 
 
 ```{r}
-(64737 + 1785) / 95920
+(63259 + 6777) / 95920
 ```
 
 
@@ -170,14 +170,14 @@ summary(model_60_70_80)
 tidy(model_60_70_80)
 
 train_model_60_70_80 <- log_mod_1960 %>%
-  add_predictions(model_4_explicit, type = "response")
+  add_predictions(model_60_70_80, type = "response")
 
 roc_obj_mod_60_70_80 <- train_model_60_70_80 %>%
   roc(response = is_popular, predictor = pred)
 
 roc_curve <- ggroc(
   data = list(
-    mod4 = roc_obj_mod4,
+    best_model = roc_obj_mod4,
     mod_60_70_80 = roc_obj_mod_60_70_80
   ), 
   legacy.axes = TRUE) +
@@ -200,7 +200,7 @@ summary(model_90_00_10)
 tidy(model_90_00_10)
 
 train_model_90_00_10 <- log_mod_1990 %>%
-  add_predictions(model_4_explicit, type = "response")
+  add_predictions(model_90_00_10, type = "response")
 
 roc_obj_mod_90_00_10 <- train_model_90_00_10 %>%
   roc(response = is_popular, predictor = pred)
@@ -208,9 +208,9 @@ roc_obj_mod_90_00_10 <- train_model_90_00_10 %>%
 
 roc_curve <- ggroc(
   data = list(
-    mod4 = roc_obj_mod4,
-    mod_60_70_80 = roc_obj_mod_60_70_80,
-    mod_90_00_10 = roc_obj_mod_90_00_10
+    best_model = roc_obj_mod4,
+    dec_60s_70s_80s = roc_obj_mod_60_70_80,
+    dec_90s_00s_10s = roc_obj_mod_90_00_10
   ), 
   legacy.axes = TRUE) +
   coord_fixed()

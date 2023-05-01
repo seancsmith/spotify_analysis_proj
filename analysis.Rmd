@@ -29,7 +29,7 @@ What (audio features) makes a song popular, and has that changed over time?
 
 ### Intro
 
-I plan to answer the question, what makes a song on spotify "popular" and how does that change over time. 
+I have been tasked by my client, Universal Records to investigate what makes a song popular on spotify in order to inform future releases. 
 
 For this project I have used a combination of Spotify datasets available on Kaggle, taken from the Spotify Web API. The original dataset contains just under 170,000 rows with 19 columns. I have then joined this with another dataset which gave me information on "genres" and "followers". (and time signature) Each row in the dataset represents 1 song, information about that song and many of it's audio features.
 
@@ -172,13 +172,13 @@ audio_features_cut <- spotify_data_clean_pivot %>%
   ylim(0, 100) +
   labs(x = "Year",
        y = "Value",
-       title = "Audio Features by Release Year",
-       subtitle = "Avg per year",
+       # title = "Audio Features by Release Year",
+       # subtitle = "Avg per year",
        colour = "Audio Feature") +
   theme_bw() +
   scale_colour_brewer(palette =  "Dark2") +
   theme(axis.text  = element_text(face = "bold", size = 18, family = "Times"),
-        axis.title  = element_text(face = "bold", size = 18, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 22, family = "Times"),
         title = element_text(face = "bold", size = 18, family = "Times"),
         legend.text = element_text(face = "bold", size = 14, family = "Times")
   ) 
@@ -198,12 +198,12 @@ spotify_data_clean_join %>%
   geom_line(colour = "red", linewidth = 2) +
   ylim(0, 50) +
   labs(x = "Year",
-       y = "Proportion",
-       title = "Proportion of Explicit Songs",
-       subtitle = "by year") +
-  theme_bw() +
+       y = "Proportion")+
+       # title = "Proportion of Explicit Songs",
+       # subtitle = "by year") +
+  theme_classic() +
   theme(axis.text  = element_text(face = "bold", size = 18, family = "Times"),
-        axis.title  = element_text(face = "bold", size = 18, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 22, family = "Times"),
         title = element_text(face = "bold", size = 18, family = "Times"),
         legend.text = element_text(face = "bold", size = 14, family = "Times")
   ) 
@@ -211,11 +211,25 @@ spotify_data_clean_join %>%
 ggsave("plot_images/explicit.png", dpi = 720, width = 10, height = 6)
 ```
 ```{r}
-spot_sample %>% 
+spotify_data_clean_join %>% 
+  group_by(year) %>% 
+  summarise(mean_pop = mean(popularity)) %>% 
   ggplot() +
-  aes(x = danceability, y = popularity, colour = explicit) +
-  geom_point() +
-  geom_smooth(method = "lm")
+  aes(x = year, y = mean_pop) +
+  geom_line(colour = "purple2", linewidth = 2) +
+  labs(x = "Year",
+       y = "Popularity") +
+  ylim(0, 100) +
+  theme_bw() +
+  scale_colour_brewer(palette =  "Dark2") +
+  theme(axis.text  = element_text(face = "bold", size = 18, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 22, family = "Times"),
+        title = element_text(face = "bold", size = 18, family = "Times"),
+        legend.text = element_text(face = "bold", size = 14, family = "Times")
+  ) 
+
+ggsave("plot_images/avg_pop.png", dpi = 720, width = 10, height = 6)
+
 ```
 
 ```{r}
@@ -313,7 +327,7 @@ summary(model_1a)
 ```
 
 After running my model I'm looking at 3 factors:
- - The P-value - is this variable making a significant difference. If the P-value is below the significance level of 0.05 then we can reject the null hypothesis and conclude that changes in the 
+ - The P-value - is this variable making a significant difference. If the P-value is below the significance level of 0.05 then we can reject the null hypothesis and conclude that correlation between the variables is significant
  
  - The R^2 - is a measure that indicates how much of the variation of popularity is explained by the year
  - The adjusted R^2 - compensates for the addition of variables. So as we're building an explanatory model, we don't want this to drop much lower than the r^2.
@@ -378,11 +392,10 @@ Logistic regression is a statistical analysis method to predict, or explain a bi
 
 So rather than using the popularity score I have used the variable I created called is_popular, which splits the data in to a logical type, so it's TRUE if the song is 50 or above.
 
-The way this is build is very similar to the linear model. I look for correlations, and I add them to my model 1 at a time. The main difference is that I'm looking for for a high AUC score this time, rather than the multiple r^squared I was looking for in the linear model.
+The way this is built is very similar to the linear model. I look for correlations, and I add them to my model 1 at a time, check they are significant. The main difference is that I'm looking for for a high AUC score this time, rather than the multiple r^squared I was looking for in the linear model.
 
 I'll explain the AUC in a second. I decided for this model to make a couple of changes. I decided to no longer include the year or decade the song was released. If I'm staying true to my original question then how could I possibly write a song that was released in the past. It had such a large influence on the linear model I thought it would be more interesting to see how the logistic model fared without it. And then I can test my model against different decades to see how it performs. 
 
- 
 
 Oscar Wilde is famously credited with having written: “Popularity is the one insult I have never suffered.”
 
@@ -436,27 +449,77 @@ ggplot() +
 
 Final Logistic Regression Model
 ```{r}
-model_4_explicit <- glm(is_popular ~ loudness + explicit + danceability + energy + no_of_artists,
+model_4_final <- glm(is_popular ~ loudness + explicit + danceability + no_of_artists,
              family = "binomial",
              data = train_log_mod)
 
-summary(model_4_explicit)
+summary(model_4_final)
 
-tidy(model_4_explicit)
+tidy(model_4_final)
 
-train_model_4_explicit <- train_log_mod %>%
-  add_predictions(model_4_explicit, type = "response")
+train_model_4_final <- train_log_mod %>%
+  add_predictions(model_4_final, type = "response")
 
-roc_obj_mod4 <- train_model_4_explicit %>%
+roc_obj_mod4 <- train_model_4_final %>%
   roc(response = is_popular, predictor = pred)
 
 roc_curve <- ggroc(
   data = list(
-    mod4 = roc_obj_mod4
+    best_model = roc_obj_mod4
   ), 
   legacy.axes = TRUE) +
   coord_fixed() + 
   theme_classic()
 
 auc(roc_obj_mod4)
+```
+
+
+```{r}
+log_mod_1990 <- train_log_mod %>% 
+  filter(decade == 1990 |
+           decade == 2000 |
+           decade == 2010)
+
+model_90_00_10 <- glm(is_popular ~ loudness + explicit + danceability + no_of_artists + energy,
+                      family = "binomial",
+                      data = log_mod_1990)
+
+summary(model_90_00_10)
+
+tidy(model_90_00_10)
+
+train_model_90_00_10 <- log_mod_1990 %>%
+  add_predictions(model_90_00_10, type = "response")
+
+roc_obj_mod_90_00_10 <- train_model_90_00_10 %>%
+  roc(response = is_popular, predictor = pred)
+
+
+roc_curve <- ggroc(
+  data = list(
+    best_model = roc_obj_mod4,
+    dec_60s_70s_80s = roc_obj_mod_60_70_80,
+    dec_90s_00s_10s = roc_obj_mod_90_00_10
+  ), 
+  legacy.axes = TRUE) +
+  coord_fixed() +
+  labs(x = "1 - Specificity (True Negative)",
+       y = "Sensitivity (True Positive)") +
+  scale_colour_brewer(palette =  "Dark2") +
+  scale_colour_discrete(labels = c("Best Model", "60s, 70s & 80s", "90s, 00s & 10s")) +
+  theme_classic() +
+  theme(axis.text  = element_text(face = "bold", size = 18, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 18, family = "Times"),
+        title = element_text(face = "bold", size = 18, family = "Times"),
+        legend.text = element_text(face = "bold", size = 16, family = "Times"),
+        legend.title = element_blank()
+  )
+
+auc(roc_obj_mod_90_00_10)
+
+roc_curve
+
+ggsave("plot_images/log_models.png", dpi = 720, width = 12, height = 6)
+
 ```
