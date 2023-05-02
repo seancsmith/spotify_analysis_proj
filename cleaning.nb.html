@@ -1807,28 +1807,10 @@ access_token &lt;- get_spotify_access_token()</code></pre>
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3BvdGlmeV9kYXRhIDwtIHJlYWRfY3N2KFwicmF3X2RhdGEvc3BvdGlmeV9kYXRhLmNzdlwiKVxuYGBgIn0= -->
-<pre class="r"><code>spotify_data &lt;- read_csv(&quot;raw_data/spotify_data.csv&quot;)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3BvdGlmeV9kYXRhIDwtIHJlYWRfY3N2KFwicmF3X2RhdGEvc3BvdGlmeV9kYXRhLmNzdlwiKVxuZGlmZl9zcG90aWZ5X2NvbWJpbmVfc2VsZWN0IDwtIHJlYWRfY3N2KFwicmF3X2RhdGEvZGlmZl9zcG90aWZ5X2NvbWJpbmUuY3N2XCIpXG5gYGAifQ== -->
+<pre class="r"><code>spotify_data &lt;- read_csv(&quot;raw_data/spotify_data.csv&quot;)
+diff_spotify_combine_select &lt;- read_csv(&quot;raw_data/diff_spotify_combine.csv&quot;)</code></pre>
 <!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiUm93czogMTY5OTA5IENvbHVtbnM6IDE54pSA4pSAIENvbHVtbiBzcGVjaWZpY2F0aW9uIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgFxuRGVsaW1pdGVyOiBcIixcIlxuY2hyICAoNCk6IGFydGlzdHMsIGlkLCBuYW1lLCByZWxlYXNlX2RhdGVcbmRibCAoMTUpOiBhY291c3RpY25lc3MsIGRhbmNlYWJpbGl0eSwgZHVyYXRpb25fbXMsIGVuZXJneSwgZXhwbGljaXQsIGluc3RydW1lbnRhbG5lc3MuLi5cbuKEuSBVc2UgYHNwZWMoKWAgdG8gcmV0cmlldmUgdGhlIGZ1bGwgY29sdW1uIHNwZWNpZmljYXRpb24gZm9yIHRoaXMgZGF0YS5cbuKEuSBTcGVjaWZ5IHRoZSBjb2x1bW4gdHlwZXMgb3Igc2V0IGBzaG93X2NvbF90eXBlcyA9IEZBTFNFYCB0byBxdWlldCB0aGlzIG1lc3NhZ2UuXG4ifQ== -->
-<pre><code>Rows: 169909 Columns: 19── Column specification ─────────────────────────────────────────────────────────────────
-Delimiter: &quot;,&quot;
-chr  (4): artists, id, name, release_date
-dbl (15): acousticness, danceability, duration_ms, energy, explicit, instrumentalness...
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<!-- rnb-output-end -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGlmZl9zcG90aWZ5X2NvbWJpbmVfc2VsZWN0IDwtIHJlYWRfY3N2KFwicmF3X2RhdGEvZGlmZl9zcG90aWZ5X2NvbWJpbmUuY3N2XCIpXG5gYGAifQ== -->
-<pre class="r"><code>diff_spotify_combine_select &lt;- read_csv(&quot;raw_data/diff_spotify_combine.csv&quot;)</code></pre>
-<!-- rnb-source-end -->
-<!-- rnb-output-begin eyJkYXRhIjoiUm93czogNTg2NjcyIENvbHVtbnM6IDTilIDilIAgQ29sdW1uIHNwZWNpZmljYXRpb24g4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSAXG5EZWxpbWl0ZXI6IFwiLFwiXG5jaHIgKDIpOiB0cmFja19pZCwgZ2VucmVzXG5kYmwgKDIpOiB0aW1lX3NpZ25hdHVyZSwgZm9sbG93ZXJzXG7ihLkgVXNlIGBzcGVjKClgIHRvIHJldHJpZXZlIHRoZSBmdWxsIGNvbHVtbiBzcGVjaWZpY2F0aW9uIGZvciB0aGlzIGRhdGEuXG7ihLkgU3BlY2lmeSB0aGUgY29sdW1uIHR5cGVzIG9yIHNldCBgc2hvd19jb2xfdHlwZXMgPSBGQUxTRWAgdG8gcXVpZXQgdGhpcyBtZXNzYWdlLlxuIn0= -->
-<pre><code>Rows: 586672 Columns: 4── Column specification ─────────────────────────────────────────────────────────────────
-Delimiter: &quot;,&quot;
-chr (2): track_id, genres
-dbl (2): time_signature, followers
-ℹ Use `spec()` to retrieve the full column specification for this data.
-ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Clean the main, full dataset</p>

@@ -18,18 +18,9 @@ spotify_genres_small <- read_csv("clean_data/spotify_genres_small.csv")
 
 
 
-
 ```{r}
-top_genres <- spotify_data_clean_join %>% 
-  count(genres) %>% 
-  drop_na() %>% 
-  arrange(desc(n)) %>% 
-  head(5) %>% 
-  pull(genres)
-```
-
-```{r}
-spotify_data_clean_join %>% 
+spotify_data_clean_join %>%
+  filter(decade != 2020) %>% 
   mutate(top_genres = if_else(genres %in% top_genres, genres, NA)) %>% 
   drop_na(top_genres) %>%
   group_by(decade) %>% 
@@ -54,5 +45,132 @@ spotify_data_clean_join %>%
 
 ```{r}
 
+```
+```{r}
+spotify_data_clean_join %>% 
+  filter(decade != 2020) %>% 
+  mutate(top_genres = if_else(genres %in% top_genres, genres, NA)) %>% 
+  drop_na(top_genres) %>%
+  group_by(decade) %>% 
+  mutate(genre_total = count(decade)) %>% 
+  group_by(decade, top_genres) %>% 
+  mutate(genre_prop = round((count(top_genres) / genre_total),2 ) * 100) %>% 
+  ggplot() +
+  aes(x = decade, y = genre_prop, fill = top_genres) +
+  geom_bar(stat = "identity", position = "fill") +
+  #geom_line(linewidth = 1) +
+  labs(x = "Decade",
+       y = "Percentage",
+       colour = "Top 5 Genres") +
+  theme_classic() +
+  #scale_colour_brewer(palette =  "Dark2") +
+  theme(axis.text  = element_text(face = "bold", size = 15, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 15, family = "Times"),
+        title = element_text(face = "bold", size = 15, family = "Times"),
+        legend.text = element_text(face = "bold", size = 10, family = "Times")
+  ) 
+```
+```{r}
+top_5_genres <- spotify_data_clean_join %>% 
+  count(genres) %>% 
+  drop_na() %>% 
+  arrange(desc(n)) %>% 
+  head(5) %>% 
+  pull(genres)
+```
+
+
+```{r}
+spotify_data_clean_join %>%
+  filter(decade != 2020) %>% 
+  #mutate(top_genres = if_else(genres %in% top_genres, genres, NA)) %>% 
+  drop_na(genres) %>%
+  group_by(decade) %>% 
+  mutate(genre_total = count(decade)) %>% 
+  group_by(decade, genres) %>% 
+  mutate(genre_prop = round((count(genres) / genre_total),2 ) * 100) %>% 
+  filter(genres %in% top_5_genres) %>% 
+  ggplot() +
+  aes(x = decade, y = genre_prop, colour = genres) +
+  geom_line(linewidth = 2) +
+  labs(x = "Decade",
+       y = "Percentage",
+       colour = "Top 5 Genres") +
+  theme_classic() +
+  scale_colour_brewer(palette =  "Dark2", labels = c("Folk", "Pop", "Rap", "Rock", "Soul")) +
+  #scale_colour_discrete() +
+
+  theme(axis.text  = element_text(face = "bold", size = 18, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 18, family = "Times"),
+        title = element_text(face = "bold", size = 15, family = "Times"),
+        legend.text = element_text(face = "bold", size = 20, family = "Times"),
+        legend.title = element_text(face = "bold", size = 20, family = "Times")
+  ) 
+
+ggsave("plot_images/genres.png", dpi = 720, width = 12, height = 6)
+
+```
+
+```{r}
+spotify_data_clean_join %>%
+  filter(decade != 2020) %>% 
+  #mutate(top_genres = if_else(genres %in% top_genres, genres, NA)) %>% 
+  drop_na(genres) %>%
+  group_by(decade) %>% 
+  mutate(genre_total = count(decade)) %>% 
+  group_by(decade, genres) %>% 
+  mutate(genre_prop = round((count(genres) / genre_total),2 ) * 100) %>% 
+  filter(genres %in% top_5_genres) %>% 
+  ggplot() +
+  aes(x = decade, y = genre_prop, fill = genres) +
+  geom_area() +
+  labs(x = "Decade",
+       y = "Percentage",
+       colour = "Top 5 Genres") +
+  theme_classic() +
+  scale_colour_brewer(palette =  "Dark2", labels = c("Folk", "Pop", "Rap", "Rock", "Soul")) +
+  #scale_colour_discrete() +
+
+  theme(axis.text  = element_text(face = "bold", size = 18, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 18, family = "Times"),
+        title = element_text(face = "bold", size = 15, family = "Times"),
+        legend.text = element_text(face = "bold", size = 20, family = "Times"),
+        legend.title = element_text(face = "bold", size = 20, family = "Times")
+  ) 
+
+  #ggsave("plot_images/genres.png", dpi = 720, width = 12, height = 6)
+
+```
+
+
+
+```{r}
+sample_spotify <- spotify_data_clean_join %>% 
+  rep_sample_n(size = 200, reps = 5000) %>% 
+    filter(decade != 2020) %>% 
+  #mutate(top_genres = if_else(genres %in% top_genres, genres, NA)) %>% 
+  drop_na(genres) %>%
+  group_by(decade) %>% 
+  mutate(genre_total = count(decade)) %>% 
+  group_by(decade, genres) %>% 
+  mutate(genre_prop = round((count(genres) / genre_total),2 ) * 100) %>% 
+  filter(genres %in% top_5_genres) %>% 
+  ggplot() +
+  aes(x = decade, y = genre_prop, colour = genres) +
+  geom_line(linewidth = 2) +
+  labs(x = "Decade",
+       y = "Percentage",
+       colour = "Top 5 Genres") +
+  theme_classic() +
+  scale_colour_brewer(palette =  "Dark2", labels = c("Folk", "Pop", "Rap", "Rock", "Soul")) +
+  #scale_colour_discrete() +
+
+  theme(axis.text  = element_text(face = "bold", size = 18, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 18, family = "Times"),
+        title = element_text(face = "bold", size = 15, family = "Times"),
+        legend.text = element_text(face = "bold", size = 20, family = "Times"),
+        legend.title = element_text(face = "bold", size = 20, family = "Times")
+  ) 
+ 
 ```
 

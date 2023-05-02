@@ -148,10 +148,10 @@ audiot_features_all <- spotify_data_clean_pivot %>%
        colour = "Audio Feature") +
   theme_bw() +
   scale_colour_brewer(palette =  "Dark2") +
-  theme(axis.text  = element_text(face = "bold", size = 15, family = "Times"),
-        axis.title  = element_text(face = "bold", size = 15, family = "Times"),
+  theme(axis.text  = element_text(face = "bold", size = 18, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 18, family = "Times"),
         title = element_text(face = "bold", size = 15, family = "Times"),
-        legend.text = element_text(face = "bold", size = 10, family = "Times")
+        legend.text = element_text(face = "bold", size = 14, family = "Times")
   ) 
 
 #ggsave(audiot_features_all, "plot_images/audio_features_all.png")
@@ -177,10 +177,14 @@ audio_features_cut <- spotify_data_clean_pivot %>%
        colour = "Audio Feature") +
   theme_bw() +
   scale_colour_brewer(palette =  "Dark2") +
-  theme(axis.text  = element_text(face = "bold", size = 18, family = "Times"),
+  scale_colour_discrete(labels = c("Acousticness", "Danceability", "Instrumentalness",
+                                   "Loudness", "Speechiness")) +
+
+  theme(axis.text  = element_text(face = "bold", size = 20, family = "Times"),
         axis.title  = element_text(face = "bold", size = 22, family = "Times"),
         title = element_text(face = "bold", size = 18, family = "Times"),
-        legend.text = element_text(face = "bold", size = 14, family = "Times")
+        legend.text = element_text(face = "bold", size = 20, family = "Times"),
+        legend.title = element_blank()
   ) 
 
 ggsave("plot_images/audio_features_cut.png", dpi = 720, width = 12, height = 6)
@@ -394,7 +398,7 @@ So rather than using the popularity score I have used the variable I created cal
 
 The way this is built is very similar to the linear model. I look for correlations, and I add them to my model 1 at a time, check they are significant. The main difference is that I'm looking for for a high AUC score this time, rather than the multiple r^squared I was looking for in the linear model.
 
-I'll explain the AUC in a second. I decided for this model to make a couple of changes. I decided to no longer include the year or decade the song was released. If I'm staying true to my original question then how could I possibly write a song that was released in the past. It had such a large influence on the linear model I thought it would be more interesting to see how the logistic model fared without it. And then I can test my model against different decades to see how it performs. 
+I'll explain the AUC in a second. I decided for this model to make a couple of changes. I decided to no longer include the year or decade the song was released. If I'm staying true to my original question then how could I possibly write a song that was released in the past. It had such a large influence on the linear model I thought it would be more interesting to see how the logistic model fared without it. And then I can test my model against different decades to see how it performs.
 
 
 Oscar Wilde is famously credited with having written: “Popularity is the one insult I have never suffered.”
@@ -481,7 +485,7 @@ log_mod_1990 <- train_log_mod %>%
            decade == 2000 |
            decade == 2010)
 
-model_90_00_10 <- glm(is_popular ~ loudness + explicit + danceability + no_of_artists + energy,
+model_90_00_10 <- glm(is_popular ~ loudness + explicit + danceability + no_of_artists,
                       family = "binomial",
                       data = log_mod_1990)
 
@@ -502,12 +506,65 @@ roc_curve <- ggroc(
     dec_60s_70s_80s = roc_obj_mod_60_70_80,
     dec_90s_00s_10s = roc_obj_mod_90_00_10
   ), 
-  legacy.axes = TRUE) +
+  legacy.axes = TRUE,
+  linewidth = 2) +
   coord_fixed() +
-  labs(x = "1 - Specificity (True Negative)",
-       y = "Sensitivity (True Positive)") +
+  labs(x = "1 - Specificity",
+       y = "Sensitivity") +
   scale_colour_brewer(palette =  "Dark2") +
-  scale_colour_discrete(labels = c("Best Model", "60s, 70s & 80s", "90s, 00s & 10s")) +
+  scale_colour_discrete(labels = c("Final Model", "60s, 70s & 80s", "90s, 00s & 10s")) +
+  theme_classic() +
+  theme(axis.text  = element_text(face = "bold", size = 18, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 18, family = "Times"),
+        title = element_text(face = "bold", size = 18, family = "Times"),
+        legend.text = element_text(face = "bold", size = 18, family = "Times"),
+        #legend.text = element_blank(),
+        legend.title = element_blank()
+        #legend.key = element_blank()
+  )
+
+auc(roc_obj_mod_90_00_10)
+
+roc_curve
+
+ggsave("plot_images/log_models.png", dpi = 720, width = 12, height = 6)
+
+```
+
+
+```{r}
+
+log_mod_1990 <- train_log_mod %>% 
+  filter(decade == 1990 |
+           decade == 2000 |
+           decade == 2010)
+
+model_90_00_10 <- glm(is_popular ~ loudness + explicit + danceability + no_of_artists,
+                      family = "binomial",
+                      data = log_mod_1990)
+
+summary(model_90_00_10)
+
+tidy(model_90_00_10)
+
+train_model_90_00_10 <- log_mod_1990 %>%
+  add_predictions(model_90_00_10, type = "response")
+
+roc_obj_mod_90_00_10 <- train_model_90_00_10 %>%
+  roc(response = is_popular, predictor = pred)
+
+
+roc_curve <- ggroc(
+  data = list(
+    best_model = roc_obj_mod4
+  ), 
+  legacy.axes = TRUE,
+  linewidth = 2) +
+  coord_fixed() +
+  labs(x = "1 - Specificity",
+       y = "Sensitivity") +
+  scale_colour_brewer(palette =  "Dark2") +
+  scale_colour_discrete(labels = "Final Model") +
   theme_classic() +
   theme(axis.text  = element_text(face = "bold", size = 18, family = "Times"),
         axis.title  = element_text(face = "bold", size = 18, family = "Times"),
@@ -520,6 +577,10 @@ auc(roc_obj_mod_90_00_10)
 
 roc_curve
 
-ggsave("plot_images/log_models.png", dpi = 720, width = 12, height = 6)
+ggsave("plot_images/log_best_model.png", dpi = 720, width = 12, height = 6)
 
 ```
+
+
+
+
