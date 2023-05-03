@@ -2,10 +2,6 @@
 title: "Spotify Analysis"
 output: html_notebook
 ---
-(does genre have an impact
-run model on before or after adding genre
-compare before and after on the same data)
-considerations and limitations - geared towards younger people
 
 ```{r include=FALSE}
 library(spotifyr)
@@ -23,71 +19,9 @@ spotify_data <- read_csv("raw_data/spotify_data.csv")
 ```
 
 
-### Question
-
-What (audio features) makes a song popular, and has that changed over time?
-
-### Intro
-
-I have been tasked by my client, Universal Records to investigate what makes a song popular on spotify in order to inform future releases. 
-
-For this project I have used a combination of Spotify datasets available on Kaggle, taken from the Spotify Web API. The original dataset contains just under 170,000 rows with 19 columns. I have then joined this with another dataset which gave me information on "genres" and "followers". (and time signature) Each row in the dataset represents 1 song, information about that song and many of it's audio features.
-
-I have used RStudio for this project as I found it excellent for model building.
-
-I had no issues surrounding the ethics of using or presenting this data. I had to get authentication to use the Spotify web api but it is readily available for people to view and analyse.
-
-### The Variables
-
-Basic Info
-artists <chr> - the artist or artists who appears on the track
-track_name <chr> - name of the song
-track_id <chr> - a distinct id to represent the song
-year <date> - year the track was released
-duration_sec <dbl> - duration of the track in seconds
-key <fctr> - the key of the song  0-11
-mode <fctr> - major or minor key
-time_signature <fctr> - time signature of the song
-tempo <dbl> - overall tempo of the track in BPM
-explicit <fct> - does the track contain explicit content
-
-decade <date> - decade of release
-no_of_artists <dbl> - the number of artists appearing on each track
-followers - 
-genre - 
-is_popular <lgl> - is the popularity rating 50 or over
-
-
-All on a scale of 0 - 100
- - acousticness <dbl> - a measure of how acoustic the track is (was it recorded in a live setting or studio)
-
- - danceability <dbl> - how suitable is the track for dancing, based on rhythm stability, tempo and beat strength.
-
-- energy - measures the intensity and activity level
-
-- instrumentalness - measures how much vocals there are in a track. The higher the number, the less vocals in the track
-
-- liveness - detects the presence of an audience in the recording. The higher the liveness the higher the probability it was recorded live.
-
-- loudness - the overall loudness of a track. Originally in db, scaled to match the other audio features.
-
-- speechiness - measures the presence of spoken word in a track. The closer to 100, the more exclusively speech-like the recording. Rap has higher score than folk.
-
-- valence - the higher the value the more positive a track sounds(e.g. happy, cheerful). The lower the score the more negative it sounds (e.g. sad, angry)
-
-### popularity -  Spotify -  "The popularity of a track is a value between 0 and 100, with 100 being the most popular. The popularity is calculated by algorithm and is based, in the most part, on the total number of plays the track has had and how recent those plays are."
-
-
 ## Hypothesis Tests on Audio Features
 
 Two sample - independent tests
-
-Independent here means that there is no reason to believe that observations in the two samples can be paired in any way. (i.e. there's no reason to believe the danceability in the 60s is the same as the 2010s)
-
-By randomly shuffling (i.e. permuting) the decade labels we lose any relationship that there was between decade and danceability. Think of this shuffling as detaching the labels from rows and then randomly assigning them back to rows. Then we see which of the following occurs:
-
-If there was no relationship in the first place (i.e. they are in fact independent) then randomly shuffling them should have no implication.
-If the difference between groups in our sample is much larger than the difference once the labels are shuffled it’s because there is a real difference between the groups, and it’s not just down to sampling variation.
 
 This is an example of the hypothesis tests which were carried out on each audio feature.
 

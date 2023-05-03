@@ -61,7 +61,7 @@ spotify_data_clean <- spotify_data %>%
 ```
 
 
-Pivot the data for easier analysis
+Pivot the data for analysis of audio features
 ```{r}
 spotify_data_clean_pivot <- spotify_data_clean %>% 
   pivot_longer(cols = acousticness:valence,
@@ -88,7 +88,6 @@ spotify_data_clean_join <- spotify_data_clean %>%
          genres = if_else(str_detect(genres, "[b][l][u][e][s]"), "blues", genres),
          genres = if_else(str_detect(genres, "[m][e][t][a][l]"), "metal", genres),
          genres = if_else(str_detect(genres, "[p][u][n][k]"), "punk", genres),
-        #genres = if_else(str_detect(genres, "[r][o][c][k][-][a][n][d][-][r][o][l][l]"), "rock&roll", genres),
          genres = if_else(str_detect(genres, "[r][o][c][k]"), "rock", genres),
          genres = if_else(str_detect(genres, "[r][e][g][g][a][e][t][o][n]"), "reggaeton", genres),
          genres = if_else(str_detect(genres, "[r][e][g][g][a][e]"), "reggae", genres),
@@ -98,24 +97,17 @@ spotify_data_clean_join <- spotify_data_clean %>%
          genres = if_else(str_detect(genres, "[d][a][n][c][e]"), "dance", genres),
          genres = if_else(str_detect(genres, "[h][o][u][s][e]"), "house", genres),
          genres = if_else(str_detect(genres, "[m][e][x][i][c][a][n]"), "mexican", genres)) %>% 
-  mutate(#year = ymd(paste0(year, "-01-01")),
-         #decade = ymd(paste0(decade, "-01-01")),
-        #explicit = as.factor(explicit),
-         time_signature = as.factor(time_signature)) %>% 
+  # mutate(year = ymd(paste0(year, "-01-01")),
+  #        decade = ymd(paste0(decade, "-01-01")),
+  #       explicit = as.factor(explicit),
+  #        time_signature = as.factor(time_signature)) %>% 
   select(-release_date, -time_signature)
 
 write_csv(spotify_data_clean_join, "clean_data/spotify_clean_join.csv")
 ```
 
-
+Cleaning for Genre Modelling
 ```{r}
-top_genres <- spotify_data_clean_join %>% 
-  count(genres) %>% 
-  drop_na() %>% 
-  arrange(desc(n)) %>% 
-  head(5) %>% 
-  pull(genres)
-
 spotify_genres_small <- spotify_data_clean_join %>% 
   mutate(top_genres = if_else(genres %in% top_genres, genres, NA)) %>% 
   drop_na(top_genres) %>% 
@@ -123,15 +115,12 @@ spotify_genres_small <- spotify_data_clean_join %>%
 
 spotify_genres_modelling <- spotify_genres_small %>% 
   mutate(top_genres = as.factor(top_genres),
-         #explicit = as.logical(explicit),
          key = as.factor(key),
          mode = as.factor(mode),
          decade = as.factor(decade)
          ) %>% 
   select(-c(artists, track_name, id))
 
-#spotify_genres_modelling %>% 
-  
 
 write_csv(spotify_genres_small, "clean_data/spotify_genres_small.csv")
 
@@ -139,6 +128,8 @@ write_csv(spotify_genres_modelling, "clean_data/spotify_genres_modelling.csv")
 ```
 
 
+
+Unfinished Cleaning for Sentiment Analysis
 ```{r}
 track_text <- spotify_data_clean_join %>% 
   select(track_name) %>% 
@@ -157,8 +148,6 @@ track_words <- spotify_data_clean_join %>%
   inner_join(get_sentiments("afinn")) %>% 
   mutate(sentiment_score = sum(value)) 
   
-
-
 ggplot() +
   aes(x = year, y = sentiment_score) +
   geom_line()
