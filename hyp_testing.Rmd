@@ -259,6 +259,8 @@ p_value <- null_distribution %>%
   get_p_value(obs_stat = observed_stat, direction = "both")
 ```
 
+### Hypothesis test for difference in popularity means
+
 H0: The mean popularity in 1960s is the same as the mean popularity in 2010s
 
 Ha: The mean popularity in 1960s is different than the mean popularity in 2010s
