@@ -1754,13 +1754,45 @@ display: none;
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShzcG90aWZ5cilcbmxpYnJhcnkodGlkeXZlcnNlKVxubGlicmFyeShpbmZlcilcbmxpYnJhcnkobHVicmlkYXRlKVxubGlicmFyeSh0aWR5dGV4dClcbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShzcG90aWZ5cilcbmxpYnJhcnkodGlkeXZlcnNlKVxuYGBgIn0= -->
 <pre class="r"><code>library(spotifyr)
-library(tidyverse)
-library(infer)
-library(lubridate)
-library(tidytext)</code></pre>
+library(tidyverse)</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUmVnaXN0ZXJlZCBTMyBtZXRob2RzIG92ZXJ3cml0dGVuIGJ5ICdkYnBseXInOlxuICBtZXRob2QgICAgICAgICBmcm9tXG4gIHByaW50LnRibF9sYXp5ICAgICBcbiAgcHJpbnQudGJsX3NxbCAgICAgIFxu4pSA4pSAIEF0dGFjaGluZyBwYWNrYWdlcyDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIDilIAgdGlkeXZlcnNlIDEuMy4yIOKUgOKUgOKclCBnZ3Bsb3QyIDMuNC4wICAgICDinJQgcHVycnIgICAxLjAuMVxu4pyUIHRpYmJsZSAgMy4yLjEgICAgIOKclCBkcGx5ciAgIDEuMS4xXG7inJQgdGlkeXIgICAxLjMuMCAgICAg4pyUIHN0cmluZ3IgMS41LjBcbuKclCByZWFkciAgIDIuMS4zICAgICDinJQgZm9yY2F0cyAwLjUuMuKUgOKUgCBDb25mbGljdHMg4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSAIHRpZHl2ZXJzZV9jb25mbGljdHMoKSDilIDilIBcbuKcliBkcGx5cjo6ZmlsdGVyKCkgbWFza3Mgc3RhdHM6OmZpbHRlcigpXG7inJYgZHBseXI6OmxhZygpICAgIG1hc2tzIHN0YXRzOjpsYWcoKVxuIn0= -->
+<pre><code>Registered S3 methods overwritten by &#39;dbplyr&#39;:
+  method         from
+  print.tbl_lazy     
+  print.tbl_sql      
+── Attaching packages ──────────────────────────────────────────────────── tidyverse 1.3.2 ──✔ ggplot2 3.4.0     ✔ purrr   1.0.1
+✔ tibble  3.2.1     ✔ dplyr   1.1.1
+✔ tidyr   1.3.0     ✔ stringr 1.5.0
+✔ readr   2.1.3     ✔ forcats 0.5.2── Conflicts ─────────────────────────────────────────────────────── tidyverse_conflicts() ──
+✖ dplyr::filter() masks stats::filter()
+✖ dplyr::lag()    masks stats::lag()</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeShpbmZlcilcbmxpYnJhcnkobHVicmlkYXRlKVxuYGBgIn0= -->
+<pre class="r"><code>library(infer)
+library(lubridate)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiXG5BdHRhY2hpbmcgcGFja2FnZTog4oCYbHVicmlkYXRl4oCZXG5cblRoZSBmb2xsb3dpbmcgb2JqZWN0cyBhcmUgbWFza2VkIGZyb20g4oCYcGFja2FnZTpiYXNl4oCZOlxuXG4gICAgZGF0ZSwgaW50ZXJzZWN0LCBzZXRkaWZmLCB1bmlvblxuIn0= -->
+<pre><code>
+Attaching package: ‘lubridate’
+
+The following objects are masked from ‘package:base’:
+
+    date, intersect, setdiff, union</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxubGlicmFyeSh0aWR5dGV4dClcbmBgYCJ9 -->
+<pre class="r"><code>library(tidytext)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiXG5BdHRhY2hpbmcgcGFja2FnZTog4oCYdGlkeXRleHTigJlcblxuVGhlIGZvbGxvd2luZyBvYmplY3QgaXMgbWFza2VkIGZyb20g4oCYcGFja2FnZTpzcG90aWZ5cuKAmTpcblxuICAgIHRpZHlcbiJ9 -->
+<pre><code>
+Attaching package: ‘tidytext’
+
+The following object is masked from ‘package:spotifyr’:
+
+    tidy</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
@@ -1775,10 +1807,28 @@ access_token &lt;- get_spotify_access_token()</code></pre>
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3BvdGlmeV9kYXRhIDwtIHJlYWRfY3N2KFwicmF3X2RhdGEvc3BvdGlmeV9kYXRhLmNzdlwiKVxuZGlmZl9zcG90aWZ5X2NvbWJpbmVfc2VsZWN0IDwtIHJlYWRfY3N2KFwicmF3X2RhdGEvZGlmZl9zcG90aWZ5X2NvbWJpbmUuY3N2XCIpXG5gYGAifQ== -->
-<pre class="r"><code>spotify_data &lt;- read_csv(&quot;raw_data/spotify_data.csv&quot;)
-diff_spotify_combine_select &lt;- read_csv(&quot;raw_data/diff_spotify_combine.csv&quot;)</code></pre>
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3BvdGlmeV9kYXRhIDwtIHJlYWRfY3N2KFwicmF3X2RhdGEvc3BvdGlmeV9kYXRhLmNzdlwiKVxuYGBgIn0= -->
+<pre class="r"><code>spotify_data &lt;- read_csv(&quot;raw_data/spotify_data.csv&quot;)</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUm93czogMTY5OTA5IENvbHVtbnM6IDE54pSA4pSAIENvbHVtbiBzcGVjaWZpY2F0aW9uIOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgOKUgFxuRGVsaW1pdGVyOiBcIixcIlxuY2hyICAoNCk6IGFydGlzdHMsIGlkLCBuYW1lLCByZWxlYXNlX2RhdGVcbmRibCAoMTUpOiBhY291c3RpY25lc3MsIGRhbmNlYWJpbGl0eSwgZHVyYXRpb25fbXMsIGVuZXJneSwgZXhwbGljaXQsIGluc3RydW1lbnRhbG5lc3MsIGtlLi4uXG7ihLkgVXNlIGBzcGVjKClgIHRvIHJldHJpZXZlIHRoZSBmdWxsIGNvbHVtbiBzcGVjaWZpY2F0aW9uIGZvciB0aGlzIGRhdGEuXG7ihLkgU3BlY2lmeSB0aGUgY29sdW1uIHR5cGVzIG9yIHNldCBgc2hvd19jb2xfdHlwZXMgPSBGQUxTRWAgdG8gcXVpZXQgdGhpcyBtZXNzYWdlLlxuIn0= -->
+<pre><code>Rows: 169909 Columns: 19── Column specification ─────────────────────────────────────────────────────────────────────
+Delimiter: &quot;,&quot;
+chr  (4): artists, id, name, release_date
+dbl (15): acousticness, danceability, duration_ms, energy, explicit, instrumentalness, ke...
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<!-- rnb-output-end -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuZGlmZl9zcG90aWZ5X2NvbWJpbmVfc2VsZWN0IDwtIHJlYWRfY3N2KFwicmF3X2RhdGEvZGlmZl9zcG90aWZ5X2NvbWJpbmUuY3N2XCIpXG5gYGAifQ== -->
+<pre class="r"><code>diff_spotify_combine_select &lt;- read_csv(&quot;raw_data/diff_spotify_combine.csv&quot;)</code></pre>
+<!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiUm93czogNTg2NjcyIENvbHVtbnM6IDTilIDilIAgQ29sdW1uIHNwZWNpZmljYXRpb24g4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSA4pSAXG5EZWxpbWl0ZXI6IFwiLFwiXG5jaHIgKDIpOiB0cmFja19pZCwgZ2VucmVzXG5kYmwgKDIpOiB0aW1lX3NpZ25hdHVyZSwgZm9sbG93ZXJzXG7ihLkgVXNlIGBzcGVjKClgIHRvIHJldHJpZXZlIHRoZSBmdWxsIGNvbHVtbiBzcGVjaWZpY2F0aW9uIGZvciB0aGlzIGRhdGEuXG7ihLkgU3BlY2lmeSB0aGUgY29sdW1uIHR5cGVzIG9yIHNldCBgc2hvd19jb2xfdHlwZXMgPSBGQUxTRWAgdG8gcXVpZXQgdGhpcyBtZXNzYWdlLlxuIn0= -->
+<pre><code>Rows: 586672 Columns: 4── Column specification ─────────────────────────────────────────────────────────────────────
+Delimiter: &quot;,&quot;
+chr (2): track_id, genres
+dbl (2): time_signature, followers
+ℹ Use `spec()` to retrieve the full column specification for this data.
+ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <p>Clean the main, full dataset</p>
@@ -1836,7 +1886,7 @@ diff_spotify_combine_select &lt;- read_csv(&quot;raw_data/diff_spotify_combine.c
 <p>Join with the other spotify dataset to retrieve extra info</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3BvdGlmeV9kYXRhX2NsZWFuX2pvaW4gPC0gc3BvdGlmeV9kYXRhX2NsZWFuICU+JSBcbiAgbGVmdF9qb2luKGRpZmZfc3BvdGlmeV9jb21iaW5lX3NlbGVjdCwgYnkgPSBjKFwiaWRcIiA9IFwidHJhY2tfaWRcIikpICU+JVxuICBtdXRhdGUoZ2VucmVzID0gbmFfaWYoZ2VucmVzLCBcIltdXCIpKSAlPiUgXG4gIG11dGF0ZShnZW5yZXMgPSBzdHJfcmVtb3ZlX2FsbChnZW5yZXMsIFwiW1xcXFxbJ1xcXFxdXStcIikpICU+JSBcbiAgbXV0YXRlKGdlbnJlcyA9IGlmX2Vsc2Uoc3RyX2RldGVjdChnZW5yZXMsIFwiW2ZdW29dW2xdW2tdXCIpLCBcImZvbGtcIiwgZ2VucmVzKSxcbiAgICAgICAgIGdlbnJlcyA9IGlmX2Vsc2Uoc3RyX2RldGVjdChnZW5yZXMsIFwiW3JdW2FdW3BdXCIpLCBcInJhcFwiLCBnZW5yZXMpLFxuICAgICAgICAgZ2VucmVzID0gaWZfZWxzZShzdHJfZGV0ZWN0KGdlbnJlcywgXCJbaV1bbl1bZF1baV1bZV1cIiksIFwiaW5kaWVcIiwgZ2VucmVzKSxcbiAgICAgICAgIGdlbnJlcyA9IGlmX2Vsc2Uoc3RyX2RldGVjdChnZW5yZXMsIFwiW3NdW29dW3VdW2xdXCIpLCBcInNvdWxcIiwgZ2VucmVzKSxcbiAgICAgICAgIGdlbnJlcyA9IGlmX2Vsc2Uoc3RyX2RldGVjdChnZW5yZXMsIFwiW2RdW2ldW3NdW2NdW29dXCIpLCBcImRpc2NvXCIsIGdlbnJlcyksXG4gICAgICAgICBnZW5yZXMgPSBpZl9lbHNlKHN0cl9kZXRlY3QoZ2VucmVzLCBcIltjXVtsXVthXVtzXVtzXVtpXVtjXVthXVtsXVwiKSwgXCJjbGFzc2ljYWxcIiwgZ2VucmVzKSxcbiAgICAgICAgIGdlbnJlcyA9IGlmX2Vsc2Uoc3RyX2RldGVjdChnZW5yZXMsIFwiW2NdW29dW3VdW25dW3RdW3JdW3ldXCIpLCBcImNvdW50cnlcIiwgZ2VucmVzKSxcbiAgICAgICAgIGdlbnJlcyA9IGlmX2Vsc2Uoc3RyX2RldGVjdChnZW5yZXMsIFwiW2pdW2FdW3pdW3pdXCIpLCBcImphenpcIiwgZ2VucmVzKSxcbiAgICAgICAgIGdlbnJlcyA9IGlmX2Vsc2Uoc3RyX2RldGVjdChnZW5yZXMsIFwiW2JdW2xdW3VdW2VdW3NdXCIpLCBcImJsdWVzXCIsIGdlbnJlcyksXG4gICAgICAgICBnZW5yZXMgPSBpZl9lbHNlKHN0cl9kZXRlY3QoZ2VucmVzLCBcIlttXVtlXVt0XVthXVtsXVwiKSwgXCJtZXRhbFwiLCBnZW5yZXMpLFxuICAgICAgICAgZ2VucmVzID0gaWZfZWxzZShzdHJfZGV0ZWN0KGdlbnJlcywgXCJbcF1bdV1bbl1ba11cIiksIFwicHVua1wiLCBnZW5yZXMpLFxuICAgICAgICAjZ2VucmVzID0gaWZfZWxzZShzdHJfZGV0ZWN0KGdlbnJlcywgXCJbcl1bb11bY11ba11bLV1bYV1bbl1bZF1bLV1bcl1bb11bbF1bbF1cIiksIFwicm9jayZyb2xsXCIsIGdlbnJlcyksXG4gICAgICAgICBnZW5yZXMgPSBpZl9lbHNlKHN0cl9kZXRlY3QoZ2VucmVzLCBcIltyXVtvXVtjXVtrXVwiKSwgXCJyb2NrXCIsIGdlbnJlcyksXG4gICAgICAgICBnZW5yZXMgPSBpZl9lbHNlKHN0cl9kZXRlY3QoZ2VucmVzLCBcIltyXVtlXVtnXVtnXVthXVtlXVt0XVtvXVtuXVwiKSwgXCJyZWdnYWV0b25cIiwgZ2VucmVzKSxcbiAgICAgICAgIGdlbnJlcyA9IGlmX2Vsc2Uoc3RyX2RldGVjdChnZW5yZXMsIFwiW3JdW2VdW2ddW2ddW2FdW2VdXCIpLCBcInJlZ2dhZVwiLCBnZW5yZXMpLFxuICAgICAgICAgZ2VucmVzID0gaWZfZWxzZShzdHJfZGV0ZWN0KGdlbnJlcywgXCJbaF1baV1bcF0gW2hdW29dW3BdXCIpLCBcImhpcCBob3BcIiwgZ2VucmVzKSxcbiAgICAgICAgIGdlbnJlcyA9IGlmX2Vsc2Uoc3RyX2RldGVjdChnZW5yZXMsIFwiW3JdWyZdW2JdXCIpLCBcInImYlwiLCBnZW5yZXMpLFxuICAgICAgICAgZ2VucmVzID0gaWZfZWxzZShzdHJfZGV0ZWN0KGdlbnJlcywgXCJbcF1bb11bcF1cIiksIFwicG9wXCIsIGdlbnJlcyksXG4gICAgICAgICBnZW5yZXMgPSBpZl9lbHNlKHN0cl9kZXRlY3QoZ2VucmVzLCBcIltkXVthXVtuXVtjXVtlXVwiKSwgXCJkYW5jZVwiLCBnZW5yZXMpLFxuICAgICAgICAgZ2VucmVzID0gaWZfZWxzZShzdHJfZGV0ZWN0KGdlbnJlcywgXCJbaF1bb11bdV1bc11bZV1cIiksIFwiaG91c2VcIiwgZ2VucmVzKSxcbiAgICAgICAgIGdlbnJlcyA9IGlmX2Vsc2Uoc3RyX2RldGVjdChnZW5yZXMsIFwiW21dW2VdW3hdW2ldW2NdW2FdW25dXCIpLCBcIm1leGljYW5cIiwgZ2VucmVzKSkgJT4lIFxuICBtdXRhdGUoI3llYXIgPSB5bWQocGFzdGUwKHllYXIsIFwiLTAxLTAxXCIpKSxcbiAgICAgICAgICNkZWNhZGUgPSB5bWQocGFzdGUwKGRlY2FkZSwgXCItMDEtMDFcIikpLFxuICAgICAgICAjZXhwbGljaXQgPSBhcy5mYWN0b3IoZXhwbGljaXQpLFxuICAgICAgICAgdGltZV9zaWduYXR1cmUgPSBhcy5mYWN0b3IodGltZV9zaWduYXR1cmUpKSAlPiUgXG4gIHNlbGVjdCgtcmVsZWFzZV9kYXRlLCAtdGltZV9zaWduYXR1cmUpXG5cbndyaXRlX2NzdihzcG90aWZ5X2RhdGFfY2xlYW5fam9pbiwgXCJjbGVhbl9kYXRhL3Nwb3RpZnlfY2xlYW5fam9pbi5jc3ZcIilcbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxuc3BvdGlmeV9kYXRhX2NsZWFuX2pvaW4gPC0gc3BvdGlmeV9kYXRhX2NsZWFuICU+JSBcbiAgbGVmdF9qb2luKGRpZmZfc3BvdGlmeV9jb21iaW5lX3NlbGVjdCwgYnkgPSBjKFwiaWRcIiA9IFwidHJhY2tfaWRcIikpICU+JVxuICBtdXRhdGUoZ2VucmVzID0gbmFfaWYoZ2VucmVzLCBcIltdXCIpKSAlPiUgXG4gIG11dGF0ZShnZW5yZXMgPSBzdHJfcmVtb3ZlX2FsbChnZW5yZXMsIFwiW1xcXFxbJ1xcXFxdXStcIikpICU+JSBcbiAgbXV0YXRlKGdlbnJlcyA9IGlmX2Vsc2Uoc3RyX2RldGVjdChnZW5yZXMsIFwiW2ZdW29dW2xdW2tdXCIpLCBcImZvbGtcIiwgZ2VucmVzKSxcbiAgICAgICAgIGdlbnJlcyA9IGlmX2Vsc2Uoc3RyX2RldGVjdChnZW5yZXMsIFwiW3JdW2FdW3BdXCIpLCBcInJhcFwiLCBnZW5yZXMpLFxuICAgICAgICAgZ2VucmVzID0gaWZfZWxzZShzdHJfZGV0ZWN0KGdlbnJlcywgXCJbaV1bbl1bZF1baV1bZV1cIiksIFwiaW5kaWVcIiwgZ2VucmVzKSxcbiAgICAgICAgIGdlbnJlcyA9IGlmX2Vsc2Uoc3RyX2RldGVjdChnZW5yZXMsIFwiW3NdW29dW3VdW2xdXCIpLCBcInNvdWxcIiwgZ2VucmVzKSxcbiAgICAgICAgIGdlbnJlcyA9IGlmX2Vsc2Uoc3RyX2RldGVjdChnZW5yZXMsIFwiW2RdW2ldW3NdW2NdW29dXCIpLCBcImRpc2NvXCIsIGdlbnJlcyksXG4gICAgICAgICBnZW5yZXMgPSBpZl9lbHNlKHN0cl9kZXRlY3QoZ2VucmVzLCBcIltjXVtsXVthXVtzXVtzXVtpXVtjXVthXVtsXVwiKSwgXCJjbGFzc2ljYWxcIiwgZ2VucmVzKSxcbiAgICAgICAgIGdlbnJlcyA9IGlmX2Vsc2Uoc3RyX2RldGVjdChnZW5yZXMsIFwiW2NdW29dW3VdW25dW3RdW3JdW3ldXCIpLCBcImNvdW50cnlcIiwgZ2VucmVzKSxcbiAgICAgICAgIGdlbnJlcyA9IGlmX2Vsc2Uoc3RyX2RldGVjdChnZW5yZXMsIFwiW2pdW2FdW3pdW3pdXCIpLCBcImphenpcIiwgZ2VucmVzKSxcbiAgICAgICAgIGdlbnJlcyA9IGlmX2Vsc2Uoc3RyX2RldGVjdChnZW5yZXMsIFwiW2JdW2xdW3VdW2VdW3NdXCIpLCBcImJsdWVzXCIsIGdlbnJlcyksXG4gICAgICAgICBnZW5yZXMgPSBpZl9lbHNlKHN0cl9kZXRlY3QoZ2VucmVzLCBcIlttXVtlXVt0XVthXVtsXVwiKSwgXCJtZXRhbFwiLCBnZW5yZXMpLFxuICAgICAgICAgZ2VucmVzID0gaWZfZWxzZShzdHJfZGV0ZWN0KGdlbnJlcywgXCJbcF1bdV1bbl1ba11cIiksIFwicHVua1wiLCBnZW5yZXMpLFxuICAgICAgICAgZ2VucmVzID0gaWZfZWxzZShzdHJfZGV0ZWN0KGdlbnJlcywgXCJbcl1bb11bY11ba11cIiksIFwicm9ja1wiLCBnZW5yZXMpLFxuICAgICAgICAgZ2VucmVzID0gaWZfZWxzZShzdHJfZGV0ZWN0KGdlbnJlcywgXCJbcl1bZV1bZ11bZ11bYV1bZV1bdF1bb11bbl1cIiksIFwicmVnZ2FldG9uXCIsIGdlbnJlcyksXG4gICAgICAgICBnZW5yZXMgPSBpZl9lbHNlKHN0cl9kZXRlY3QoZ2VucmVzLCBcIltyXVtlXVtnXVtnXVthXVtlXVwiKSwgXCJyZWdnYWVcIiwgZ2VucmVzKSxcbiAgICAgICAgIGdlbnJlcyA9IGlmX2Vsc2Uoc3RyX2RldGVjdChnZW5yZXMsIFwiW2hdW2ldW3BdIFtoXVtvXVtwXVwiKSwgXCJoaXAgaG9wXCIsIGdlbnJlcyksXG4gICAgICAgICBnZW5yZXMgPSBpZl9lbHNlKHN0cl9kZXRlY3QoZ2VucmVzLCBcIltyXVsmXVtiXVwiKSwgXCJyJmJcIiwgZ2VucmVzKSxcbiAgICAgICAgIGdlbnJlcyA9IGlmX2Vsc2Uoc3RyX2RldGVjdChnZW5yZXMsIFwiW3BdW29dW3BdXCIpLCBcInBvcFwiLCBnZW5yZXMpLFxuICAgICAgICAgZ2VucmVzID0gaWZfZWxzZShzdHJfZGV0ZWN0KGdlbnJlcywgXCJbZF1bYV1bbl1bY11bZV1cIiksIFwiZGFuY2VcIiwgZ2VucmVzKSxcbiAgICAgICAgIGdlbnJlcyA9IGlmX2Vsc2Uoc3RyX2RldGVjdChnZW5yZXMsIFwiW2hdW29dW3VdW3NdW2VdXCIpLCBcImhvdXNlXCIsIGdlbnJlcyksXG4gICAgICAgICBnZW5yZXMgPSBpZl9lbHNlKHN0cl9kZXRlY3QoZ2VucmVzLCBcIlttXVtlXVt4XVtpXVtjXVthXVtuXVwiKSwgXCJtZXhpY2FuXCIsIGdlbnJlcykpICU+JSBcbiAgIyBtdXRhdGUoeWVhciA9IHltZChwYXN0ZTAoeWVhciwgXCItMDEtMDFcIikpLFxuICAjICAgICAgICBkZWNhZGUgPSB5bWQocGFzdGUwKGRlY2FkZSwgXCItMDEtMDFcIikpLFxuICAjICAgICAgIGV4cGxpY2l0ID0gYXMuZmFjdG9yKGV4cGxpY2l0KSxcbiAgIyAgICAgICAgdGltZV9zaWduYXR1cmUgPSBhcy5mYWN0b3IodGltZV9zaWduYXR1cmUpKSAlPiUgXG4gIHNlbGVjdCgtcmVsZWFzZV9kYXRlLCAtdGltZV9zaWduYXR1cmUpXG5cbndyaXRlX2NzdihzcG90aWZ5X2RhdGFfY2xlYW5fam9pbiwgXCJjbGVhbl9kYXRhL3Nwb3RpZnlfY2xlYW5fam9pbi5jc3ZcIilcbmBgYCJ9 -->
 <pre class="r"><code>spotify_data_clean_join &lt;- spotify_data_clean %&gt;% 
   left_join(diff_spotify_combine_select, by = c(&quot;id&quot; = &quot;track_id&quot;)) %&gt;%
   mutate(genres = na_if(genres, &quot;[]&quot;)) %&gt;% 
@@ -1852,7 +1902,6 @@ diff_spotify_combine_select &lt;- read_csv(&quot;raw_data/diff_spotify_combine.c
          genres = if_else(str_detect(genres, &quot;[b][l][u][e][s]&quot;), &quot;blues&quot;, genres),
          genres = if_else(str_detect(genres, &quot;[m][e][t][a][l]&quot;), &quot;metal&quot;, genres),
          genres = if_else(str_detect(genres, &quot;[p][u][n][k]&quot;), &quot;punk&quot;, genres),
-        #genres = if_else(str_detect(genres, &quot;[r][o][c][k][-][a][n][d][-][r][o][l][l]&quot;), &quot;rock&amp;roll&quot;, genres),
          genres = if_else(str_detect(genres, &quot;[r][o][c][k]&quot;), &quot;rock&quot;, genres),
          genres = if_else(str_detect(genres, &quot;[r][e][g][g][a][e][t][o][n]&quot;), &quot;reggaeton&quot;, genres),
          genres = if_else(str_detect(genres, &quot;[r][e][g][g][a][e]&quot;), &quot;reggae&quot;, genres),
@@ -1862,10 +1911,10 @@ diff_spotify_combine_select &lt;- read_csv(&quot;raw_data/diff_spotify_combine.c
          genres = if_else(str_detect(genres, &quot;[d][a][n][c][e]&quot;), &quot;dance&quot;, genres),
          genres = if_else(str_detect(genres, &quot;[h][o][u][s][e]&quot;), &quot;house&quot;, genres),
          genres = if_else(str_detect(genres, &quot;[m][e][x][i][c][a][n]&quot;), &quot;mexican&quot;, genres)) %&gt;% 
-  mutate(#year = ymd(paste0(year, &quot;-01-01&quot;)),
-         #decade = ymd(paste0(decade, &quot;-01-01&quot;)),
-        #explicit = as.factor(explicit),
-         time_signature = as.factor(time_signature)) %&gt;% 
+  # mutate(year = ymd(paste0(year, &quot;-01-01&quot;)),
+  #        decade = ymd(paste0(decade, &quot;-01-01&quot;)),
+  #       explicit = as.factor(explicit),
+  #        time_signature = as.factor(time_signature)) %&gt;% 
   select(-release_date, -time_signature)
 
 write_csv(spotify_data_clean_join, &quot;clean_data/spotify_clean_join.csv&quot;)</code></pre>
@@ -1909,14 +1958,21 @@ write_csv(spotify_genres_modelling, &quot;clean_data/spotify_genres_modelling.cs
 <p>Unfinished Cleaning for Sentiment Analysis</p>
 <!-- rnb-text-end -->
 <!-- rnb-chunk-begin -->
-<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudHJhY2tfdGV4dCA8LSBzcG90aWZ5X2RhdGFfY2xlYW5fam9pbiAlPiUgXG4gIHNlbGVjdCh0cmFja19uYW1lKSAlPiUgXG4gIHVubmVzdF90b2tlbnMod29yZCwgdHJhY2tfbmFtZSkgJT4lIFxuICAgIGlubmVyX2pvaW4oZ2V0X3NlbnRpbWVudHMoXCJiaW5nXCIpLCBieSA9IFwid29yZFwiKSAlPiUgXG4gIGdyb3VwX2J5KHRyYWNrX25hbWUpXG5cbmBgYCJ9 -->
+<!-- rnb-source-begin eyJkYXRhIjoiYGBgclxudHJhY2tfdGV4dCA8LSBzcG90aWZ5X2RhdGFfY2xlYW5fam9pbiAlPiUgXG4gIHNlbGVjdCh0cmFja19uYW1lKSAlPiUgXG4gIHVubmVzdF90b2tlbnMod29yZCwgdHJhY2tfbmFtZSkgJT4lIFxuICAgIGlubmVyX2pvaW4oZ2V0X3NlbnRpbWVudHMoXCJiaW5nXCIpLCBieSA9IFwid29yZFwiKSAlPiUgXG4gIGdyb3VwX2J5KHRyYWNrX25hbWUpXG5gYGAifQ== -->
 <pre class="r"><code>track_text &lt;- spotify_data_clean_join %&gt;% 
   select(track_name) %&gt;% 
   unnest_tokens(word, track_name) %&gt;% 
     inner_join(get_sentiments(&quot;bing&quot;), by = &quot;word&quot;) %&gt;% 
-  group_by(track_name)
-</code></pre>
+  group_by(track_name)</code></pre>
 <!-- rnb-source-end -->
+<!-- rnb-output-begin eyJkYXRhIjoiRXJyb3IgaW4gYGdyb3VwX2J5KClgOlxuISBNdXN0IGdyb3VwIGJ5IHZhcmlhYmxlcyBmb3VuZCBpbiBgLmRhdGFgLlxu4pyWIENvbHVtbiBgdHJhY2tfbmFtZWAgaXMgbm90IGZvdW5kLlxuQmFja3RyYWNlOlxuIDEuIC4uLiAlPiUgZ3JvdXBfYnkodHJhY2tfbmFtZSlcbiAzLiBkcGx5cjo6Omdyb3VwX2J5LmRhdGEuZnJhbWUoLiwgdHJhY2tfbmFtZSlcbiJ9 -->
+<pre><code>Error in `group_by()`:
+! Must group by variables found in `.data`.
+✖ Column `track_name` is not found.
+Backtrace:
+ 1. ... %&gt;% group_by(track_name)
+ 3. dplyr:::group_by.data.frame(., track_name)</code></pre>
+<!-- rnb-output-end -->
 <!-- rnb-chunk-end -->
 <!-- rnb-text-begin -->
 <!-- rnb-text-end -->
