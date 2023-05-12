@@ -1,0 +1,10 @@
+---
+title: "What Makes a Song Popular on Spotify"
+output: html_notebook
+---
+
+### Context
+
+#### Business Intelligence and Data-Driven Decision Making
+
+- From my analysis the business will be able to have a better understanding of what makes a song popular on spotify. 
