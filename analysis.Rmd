@@ -334,9 +334,6 @@ The way this is built is very similar to the linear model. I look for correlatio
 
 I'll explain the AUC in a second. I decided for this model to make a couple of changes. I decided to no longer include the year or decade the song was released. If I'm staying true to my original question then how could I possibly write a song that was released in the past. It had such a large influence on the linear model I thought it would be more interesting to see how the logistic model fared without it. And then I can test my model against different decades to see how it performs.
 
-
-Oscar Wilde is famously credited with having written: “Popularity is the one insult I have never suffered.”
-
 ```{r}
 spot_sample %>% 
   mutate(explicit = as.logical(explicit)) %>% 

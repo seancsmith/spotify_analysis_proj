@@ -1757,14 +1757,168 @@ display: none;
 <div id="business-intelligence-and-data-driven-decision-making" class="section level4">
 <h4>Business Intelligence and Data-Driven Decision Making</h4>
 <ul>
-<li>From my analysis the business will be able to have a better
-understanding of what makes a song popular on spotify.</li>
+<li><p>Working with Universal Music Group, I have been asked to
+investigate what makes a song popular on Spotify. This will help inform
+the business for future releases, giving them extra insight in to what
+gives a song a high popularity score on Spotify.</p></li>
+<li><p>Universal Music Group (UMG) are one of the largest music
+company/record labels in the world. They operate a large, diverse
+portfolio of record labels and publishing companies, who represent some
+of the biggest names in the music industry. Their primary business
+activities involve discovering, developing, promoting and distributing
+music.</p></li>
+<li><p>My analysis will give UMG a good indication of what new music
+could be popular on Spotify as well as providing information that they
+can hand down to subsidiary labels, artists and producers for creating
+new music with a goal to being popular on Spotify.</p></li>
+</ul>
+</div>
+</div>
+<div id="data" class="section level3">
+<h3>Data</h3>
+<div id="internal-and-external-data-sources" class="section level4">
+<h4>Internal and External Data Sources</h4>
+<ul>
+<li>For this project I used a combination of 3 externally sourced
+datasets. These were all taken from Kaggle. All of these were created
+using the Spotify Web API. The main dataset originally contained 169,000
+rows with each row providing information about 1 song.</li>
+</ul>
+</div>
+<div id="type-of-data" class="section level4">
+<h4>Type of Data</h4>
+<ul>
+<li>The majority of data I worked with was continuous numerical data.
+This included all of the <code>audio features</code> which I put on a
+scale of 0 - 100, including decimals.</li>
+<li>There were some discrete numerical columns only containing whole
+numbers. These included the <code>key</code>, which was on a scale of 0
+- 11 and the <code>number of followers</code> an artist has.</li>
+<li>I also had a lot of nominal categorical data to work with. These
+came in the form of the <code>track_name</code>, <code>artists</code> or
+<code>genre</code>.</li>
+<li>I also had a few date variables, such as
+<code>date_of_release</code>, <code>year</code> and
+<code>decade</code>.</li>
+</ul>
+</div>
+<div id="data-formats" class="section level4">
+<h4>Data Formats</h4>
+<ul>
+<li>All of the data came in the form of CSV files from Kaggle.</li>
+</ul>
+</div>
+<div id="data-quality-bias" class="section level4">
+<h4>Data Quality &amp; Bias</h4>
+<ul>
+<li><p>The orginal dataset I was working from contained no missing
+values. It was complete and I had no reason to believe any of it was
+incorrect as it was taken from the Spotify Web API. When I joined the
+datasets together I created a lot of NA values as there was no
+information on <code>genre</code> or <code>number of followers</code>
+for almost half of the data.</p></li>
+<li><p>In terms of bias there was a small issue where the songs I was
+was working with were already “popular” songs. For many years after the
+year 2000 there were very few songs with a popularity score under 50. I
+think if I would have slightly different findings if I used a dataset
+with a broader range of <code>popularity</code> score.</p></li>
+</ul>
+</div>
+</div>
+<div id="ethics" class="section level3">
+<h3>Ethics</h3>
+<div id="ethical-issues-in-data-sourcing-and-extraction" class="section level4">
+<h4>Ethical Issues in Data Sourcing and Extraction</h4>
+<ul>
+<li>I don’t have any major concerns over the sourcing or extraction of
+the data. However, it was a dataset put together by someone else and
+made available to download on Kaggle, which means I can’t say for
+certain that the data is 100% accurate. Although I have no reason to
+believe it is not accurate.</li>
+</ul>
+</div>
+<div id="ethical-implications-of-business-requirements" class="section level4">
+<h4>Ethical Implications of Business Requirements</h4>
+<ul>
+<li>There are no ethical implications of the business requirements. The
+data is all from the Spotify Web API which is publicly available with a
+Spotify for Developers login.</li>
+</ul>
+</div>
+</div>
+<div id="analysis" class="section level3">
+<h3>Analysis</h3>
+<div id="stages-in-the-data-analysis-process" class="section level4">
+<h4>Stages in the Data Analysis Process</h4>
+<p><strong>Exploratory Analysis</strong></p>
+<ul>
+<li><p>Audio Features change over time. I looked at how each of the
+<code>audio_features</code> changed from 1960 - 2020. I also conducted
+hypothesis tests to check that the difference in means were significant
+from 1960 - 2020, which they were.</p></li>
+<li><p>The proportion of explicit songs from 1960 - 2020. I had 2000
+tracks/rows for each year in my final, clean dataset. I calculated the
+proportion of explicit tracks each year and plotted that from 1960 -
+2020.</p></li>
+<li><p>The mean popularity change over time. I took the mean popularity
+score from each year and plotted that over time. This was to see how
+heavily weighted the Spotify algorithm used to calculate the popularity
+score was towards recent music.</p></li>
+</ul>
+<p><strong>Linear Regression</strong></p>
+<ul>
+<li><p>To help me answer my question of what makes a song “popular” on
+spotify, I decided to build an explanatory linear regression model. This
+type of analysis is used to determine the strength of the relationship
+between a response variable and multiple explanatory variables.</p></li>
+<li><p>In this stage I look for correlations between
+<code>popularity</code> and the rest of my variables. I then add the
+‘most significant’ variable to the model. I repeated this until my model
+stopped improving.</p></li>
+</ul>
+<p><strong>Logistic Regression</strong></p>
+<ul>
+<li>I created a variable called is_popular which gave me a TRUE if the
+songs popularity score was 50 or greater, and FALSE otherwise. I used
+this binary outcome to create a logistic regression model to help
+explain if a song <code>is_popular</code>.</li>
+</ul>
+</div>
+<div id="tools-for-data-analysis" class="section level4">
+<h4>Tools for Data Analysis</h4>
+<p>I used RStudio for all of my data analysis. Within RStudio I used
+these packages…</p>
+<ul>
+<li><code>tidyverse</code> - integrated set of tools for working with
+data in R</li>
+<li><code>janitor</code> - used for data cleaning and preperation</li>
+<li><code>lubridate</code> - provides a set of functions to work with
+dates and times</li>
+<li><code>spotifyr</code> - for working with the Spotify Web API</li>
+<li><code>infer</code> - used for hypothesis testing</li>
+<li><code>modelr</code> - makes it easier to work on statistical
+models</li>
+<li><code>ggfortify</code> - enhancing visualisations of ggplot2</li>
+<li><code>GGally</code> - set of tools for creating and comparing
+multiple plots</li>
+<li><code>mosaic</code> - used for model comparison (ANOVA test)</li>
+<li><code>pROC</code> - for visualisation of roc curves during logistic
+regression</li>
+</ul>
+</div>
+<div id="descriptive-diagnostic-predictive-and-prescriptive-analysis" class="section level4">
+<h4>Descriptive, Diagnostic, Predictive and Prescriptive Analysis</h4>
+<ul>
+<li>My analysis falls under <strong>Diagnostic Analytics</strong> as it
+helps us understand why songs have been given a certain popularity
+score. I used model building to find correlations, to help explain what
+gives a song a high popularity score on Spotify.</li>
 </ul>
 <!-- rnb-text-end -->
 </div>
 </div>
 
-<div id="rmd-source-code">LS0tCnRpdGxlOiAiV2hhdCBNYWtlcyBhIFNvbmcgUG9wdWxhciBvbiBTcG90aWZ5IgpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sKLS0tCgojIyMgQ29udGV4dAoKIyMjIyBCdXNpbmVzcyBJbnRlbGxpZ2VuY2UgYW5kIERhdGEtRHJpdmVuIERlY2lzaW9uIE1ha2luZwoKLSBGcm9tIG15IGFuYWx5c2lzIHRoZSBidXNpbmVzcyB3aWxsIGJlIGFibGUgdG8gaGF2ZSBhIGJldHRlciB1bmRlcnN0YW5kaW5nIG9mIHdoYXQgbWFrZXMgYSBzb25nIHBvcHVsYXIgb24gc3BvdGlmeS4gCg==</div>
+<div id="rmd-source-code">LS0tCnRpdGxlOiAiV2hhdCBNYWtlcyBhIFNvbmcgUG9wdWxhciBvbiBTcG90aWZ5IgpvdXRwdXQ6IGh0bWxfbm90ZWJvb2sKLS0tCgojIyMgQ29udGV4dAoKIyMjIyBCdXNpbmVzcyBJbnRlbGxpZ2VuY2UgYW5kIERhdGEtRHJpdmVuIERlY2lzaW9uIE1ha2luZwoKLSBXb3JraW5nIHdpdGggVW5pdmVyc2FsIE11c2ljIEdyb3VwLCBJIGhhdmUgYmVlbiBhc2tlZCB0byBpbnZlc3RpZ2F0ZSB3aGF0IG1ha2VzIGEgc29uZyBwb3B1bGFyIG9uIFNwb3RpZnkuIFRoaXMgd2lsbCBoZWxwIGluZm9ybSB0aGUgYnVzaW5lc3MgZm9yIGZ1dHVyZSByZWxlYXNlcywgZ2l2aW5nIHRoZW0gZXh0cmEgaW5zaWdodCBpbiB0byB3aGF0IGdpdmVzIGEgc29uZyBhIGhpZ2ggcG9wdWxhcml0eSBzY29yZSBvbiBTcG90aWZ5LgoKLSBVbml2ZXJzYWwgTXVzaWMgR3JvdXAgKFVNRykgYXJlIG9uZSBvZiB0aGUgbGFyZ2VzdCBtdXNpYyBjb21wYW55L3JlY29yZCBsYWJlbHMgaW4gdGhlIHdvcmxkLiBUaGV5IG9wZXJhdGUgYSBsYXJnZSwgZGl2ZXJzZSBwb3J0Zm9saW8gb2YgcmVjb3JkIGxhYmVscyBhbmQgcHVibGlzaGluZyBjb21wYW5pZXMsIHdobyByZXByZXNlbnQgc29tZSBvZiB0aGUgYmlnZ2VzdCBuYW1lcyBpbiB0aGUgbXVzaWMgaW5kdXN0cnkuIFRoZWlyIHByaW1hcnkgYnVzaW5lc3MgYWN0aXZpdGllcyBpbnZvbHZlIGRpc2NvdmVyaW5nLCBkZXZlbG9waW5nLCBwcm9tb3RpbmcgYW5kIGRpc3RyaWJ1dGluZyBtdXNpYy4gCgotIE15IGFuYWx5c2lzIHdpbGwgZ2l2ZSBVTUcgYSBnb29kIGluZGljYXRpb24gb2Ygd2hhdCBuZXcgbXVzaWMgY291bGQgYmUgcG9wdWxhciBvbiBTcG90aWZ5IGFzIHdlbGwgYXMgcHJvdmlkaW5nIGluZm9ybWF0aW9uIHRoYXQgdGhleSBjYW4gaGFuZCBkb3duIHRvIHN1YnNpZGlhcnkgbGFiZWxzLCBhcnRpc3RzIGFuZCBwcm9kdWNlcnMgZm9yIGNyZWF0aW5nIG5ldyBtdXNpYyB3aXRoIGEgZ29hbCB0byBiZWluZyBwb3B1bGFyIG9uIFNwb3RpZnkuCgojIyMgRGF0YQoKIyMjIyBJbnRlcm5hbCBhbmQgRXh0ZXJuYWwgRGF0YSBTb3VyY2VzCgotIEZvciB0aGlzIHByb2plY3QgSSB1c2VkIGEgY29tYmluYXRpb24gb2YgMyBleHRlcm5hbGx5IHNvdXJjZWQgZGF0YXNldHMuIFRoZXNlIHdlcmUgYWxsIHRha2VuIGZyb20gS2FnZ2xlLiBBbGwgb2YgdGhlc2Ugd2VyZSBjcmVhdGVkIHVzaW5nIHRoZSBTcG90aWZ5IFdlYiBBUEkuIFRoZSBtYWluIGRhdGFzZXQgb3JpZ2luYWxseSBjb250YWluZWQgMTY5LDAwMCByb3dzIHdpdGggZWFjaCByb3cgcHJvdmlkaW5nIGluZm9ybWF0aW9uIGFib3V0IDEgc29uZy4gCgojIyMjIFR5cGUgb2YgRGF0YQoKLSBUaGUgbWFqb3JpdHkgb2YgZGF0YSBJIHdvcmtlZCB3aXRoIHdhcyBjb250aW51b3VzIG51bWVyaWNhbCBkYXRhLiBUaGlzIGluY2x1ZGVkIGFsbCBvZiB0aGUgYGF1ZGlvIGZlYXR1cmVzYCB3aGljaCBJIHB1dCBvbiBhIHNjYWxlIG9mIDAgLSAxMDAsIGluY2x1ZGluZyBkZWNpbWFscy4KLSBUaGVyZSB3ZXJlIHNvbWUgZGlzY3JldGUgbnVtZXJpY2FsIGNvbHVtbnMgb25seSBjb250YWluaW5nIHdob2xlIG51bWJlcnMuIFRoZXNlIGluY2x1ZGVkIHRoZSBga2V5YCwgd2hpY2ggd2FzIG9uIGEgc2NhbGUgb2YgMCAtIDExIGFuZCB0aGUgYG51bWJlciBvZiBmb2xsb3dlcnNgIGFuIGFydGlzdCBoYXMuCi0gSSBhbHNvIGhhZCBhIGxvdCBvZiBub21pbmFsIGNhdGVnb3JpY2FsIGRhdGEgdG8gd29yayB3aXRoLiBUaGVzZSBjYW1lIGluIHRoZSBmb3JtIG9mIHRoZSBgdHJhY2tfbmFtZWAsIGBhcnRpc3RzYCBvciBgZ2VucmVgLgotIEkgYWxzbyBoYWQgYSBmZXcgZGF0ZSB2YXJpYWJsZXMsIHN1Y2ggYXMgYGRhdGVfb2ZfcmVsZWFzZWAsIGB5ZWFyYCBhbmQgYGRlY2FkZWAuCgojIyMjIERhdGEgRm9ybWF0cwoKLSBBbGwgb2YgdGhlIGRhdGEgY2FtZSBpbiB0aGUgZm9ybSBvZiBDU1YgZmlsZXMgZnJvbSBLYWdnbGUuIAoKIyMjIyBEYXRhIFF1YWxpdHkgJiBCaWFzCgotIFRoZSBvcmdpbmFsIGRhdGFzZXQgSSB3YXMgd29ya2luZyBmcm9tIGNvbnRhaW5lZCBubyBtaXNzaW5nIHZhbHVlcy4gSXQgd2FzIGNvbXBsZXRlIGFuZCBJIGhhZCBubyByZWFzb24gdG8gYmVsaWV2ZSBhbnkgb2YgaXQgd2FzIGluY29ycmVjdCBhcyBpdCB3YXMgdGFrZW4gZnJvbSB0aGUgU3BvdGlmeSBXZWIgQVBJLiBXaGVuIEkgam9pbmVkIHRoZSBkYXRhc2V0cyB0b2dldGhlciBJIGNyZWF0ZWQgYSBsb3Qgb2YgTkEgdmFsdWVzIGFzIHRoZXJlIHdhcyBubyBpbmZvcm1hdGlvbiBvbiBgZ2VucmVgIG9yIGBudW1iZXIgb2YgZm9sbG93ZXJzYCBmb3IgYWxtb3N0IGhhbGYgb2YgdGhlIGRhdGEuIAoKLSBJbiB0ZXJtcyBvZiBiaWFzIHRoZXJlIHdhcyBhIHNtYWxsIGlzc3VlIHdoZXJlIHRoZSBzb25ncyBJIHdhcyB3YXMgd29ya2luZyB3aXRoIHdlcmUgYWxyZWFkeSAicG9wdWxhciIgc29uZ3MuIEZvciBtYW55IHllYXJzIGFmdGVyIHRoZSB5ZWFyIDIwMDAgdGhlcmUgd2VyZSB2ZXJ5IGZldyBzb25ncyB3aXRoIGEgcG9wdWxhcml0eSBzY29yZSB1bmRlciA1MC4gSSB0aGluayBpZiBJIHdvdWxkIGhhdmUgc2xpZ2h0bHkgZGlmZmVyZW50IGZpbmRpbmdzIGlmIEkgdXNlZCBhIGRhdGFzZXQgd2l0aCBhIGJyb2FkZXIgcmFuZ2Ugb2YgYHBvcHVsYXJpdHlgIHNjb3JlLgoKIyMjIEV0aGljcwoKIyMjIyBFdGhpY2FsIElzc3VlcyBpbiBEYXRhIFNvdXJjaW5nIGFuZCBFeHRyYWN0aW9uCgotIEkgZG9uJ3QgaGF2ZSBhbnkgbWFqb3IgY29uY2VybnMgb3ZlciB0aGUgc291cmNpbmcgb3IgZXh0cmFjdGlvbiBvZiB0aGUgZGF0YS4gSG93ZXZlciwgaXQgd2FzIGEgZGF0YXNldCBwdXQgdG9nZXRoZXIgYnkgc29tZW9uZSBlbHNlIGFuZCBtYWRlIGF2YWlsYWJsZSB0byBkb3dubG9hZCBvbiBLYWdnbGUsIHdoaWNoIG1lYW5zIEkgY2FuJ3Qgc2F5IGZvciBjZXJ0YWluIHRoYXQgdGhlIGRhdGEgaXMgMTAwJSBhY2N1cmF0ZS4gQWx0aG91Z2ggSSBoYXZlIG5vIHJlYXNvbiB0byBiZWxpZXZlIGl0IGlzIG5vdCBhY2N1cmF0ZS4KCiMjIyMgRXRoaWNhbCBJbXBsaWNhdGlvbnMgb2YgQnVzaW5lc3MgUmVxdWlyZW1lbnRzCgotIFRoZXJlIGFyZSBubyBldGhpY2FsIGltcGxpY2F0aW9ucyBvZiB0aGUgYnVzaW5lc3MgcmVxdWlyZW1lbnRzLiBUaGUgZGF0YSBpcyBhbGwgZnJvbSB0aGUgU3BvdGlmeSBXZWIgQVBJIHdoaWNoIGlzIHB1YmxpY2x5IGF2YWlsYWJsZSB3aXRoIGEgU3BvdGlmeSBmb3IgRGV2ZWxvcGVycyBsb2dpbi4KCiMjIyBBbmFseXNpcwoKIyMjIyBTdGFnZXMgaW4gdGhlIERhdGEgQW5hbHlzaXMgUHJvY2VzcwoKX19FeHBsb3JhdG9yeSBBbmFseXNpc19fCgotIEF1ZGlvIEZlYXR1cmVzIGNoYW5nZSBvdmVyIHRpbWUuIEkgbG9va2VkIGF0IGhvdyBlYWNoIG9mIHRoZSBgYXVkaW9fZmVhdHVyZXNgIGNoYW5nZWQgZnJvbSAxOTYwIC0gMjAyMC4gSSBhbHNvIGNvbmR1Y3RlZCBoeXBvdGhlc2lzIHRlc3RzIHRvIGNoZWNrIHRoYXQgdGhlIGRpZmZlcmVuY2UgaW4gbWVhbnMgd2VyZSBzaWduaWZpY2FudCBmcm9tIDE5NjAgLSAyMDIwLCB3aGljaCB0aGV5IHdlcmUuCgotIFRoZSBwcm9wb3J0aW9uIG9mIGV4cGxpY2l0IHNvbmdzIGZyb20gMTk2MCAtIDIwMjAuIEkgaGFkIDIwMDAgdHJhY2tzL3Jvd3MgZm9yIGVhY2ggeWVhciBpbiBteSBmaW5hbCwgY2xlYW4gZGF0YXNldC4gSSBjYWxjdWxhdGVkIHRoZSBwcm9wb3J0aW9uIG9mIGV4cGxpY2l0IHRyYWNrcyBlYWNoIHllYXIgYW5kIHBsb3R0ZWQgdGhhdCBmcm9tIDE5NjAgLSAyMDIwLiAKCi0gVGhlIG1lYW4gcG9wdWxhcml0eSBjaGFuZ2Ugb3ZlciB0aW1lLiBJIHRvb2sgdGhlIG1lYW4gcG9wdWxhcml0eSBzY29yZSBmcm9tIGVhY2ggeWVhciBhbmQgcGxvdHRlZCB0aGF0IG92ZXIgdGltZS4gVGhpcyB3YXMgdG8gc2VlIGhvdyBoZWF2aWx5IHdlaWdodGVkIHRoZSBTcG90aWZ5IGFsZ29yaXRobSB1c2VkIHRvIGNhbGN1bGF0ZSB0aGUgcG9wdWxhcml0eSBzY29yZSB3YXMgdG93YXJkcyByZWNlbnQgbXVzaWMuCgpfX0xpbmVhciBSZWdyZXNzaW9uX18KCi0gVG8gaGVscCBtZSBhbnN3ZXIgbXkgcXVlc3Rpb24gb2Ygd2hhdCBtYWtlcyBhIHNvbmcgInBvcHVsYXIiIG9uIHNwb3RpZnksIEkgZGVjaWRlZCB0byBidWlsZCBhbiBleHBsYW5hdG9yeSBsaW5lYXIgcmVncmVzc2lvbiBtb2RlbC4gVGhpcyB0eXBlIG9mIGFuYWx5c2lzIGlzIHVzZWQgdG8gZGV0ZXJtaW5lIHRoZSBzdHJlbmd0aCBvZiB0aGUgcmVsYXRpb25zaGlwIGJldHdlZW4gYSByZXNwb25zZSB2YXJpYWJsZSBhbmQgbXVsdGlwbGUgZXhwbGFuYXRvcnkgdmFyaWFibGVzLgoKLSBJbiB0aGlzIHN0YWdlIEkgbG9vayBmb3IgY29ycmVsYXRpb25zIGJldHdlZW4gYHBvcHVsYXJpdHlgIGFuZCB0aGUgcmVzdCBvZiBteSB2YXJpYWJsZXMuIEkgdGhlbiBhZGQgdGhlICdtb3N0IHNpZ25pZmljYW50JyB2YXJpYWJsZSB0byB0aGUgbW9kZWwuIEkgcmVwZWF0ZWQgdGhpcyB1bnRpbCBteSBtb2RlbCBzdG9wcGVkIGltcHJvdmluZy4KCl9fTG9naXN0aWMgUmVncmVzc2lvbl9fCgotIEkgY3JlYXRlZCBhIHZhcmlhYmxlIGNhbGxlZCBpc19wb3B1bGFyIHdoaWNoIGdhdmUgbWUgYSBUUlVFIGlmIHRoZSBzb25ncyBwb3B1bGFyaXR5IHNjb3JlIHdhcyA1MCBvciBncmVhdGVyLCBhbmQgRkFMU0Ugb3RoZXJ3aXNlLiBJIHVzZWQgdGhpcyBiaW5hcnkgb3V0Y29tZSB0byBjcmVhdGUgYSBsb2dpc3RpYyByZWdyZXNzaW9uIG1vZGVsIHRvIGhlbHAgZXhwbGFpbiBpZiBhIHNvbmcgYGlzX3BvcHVsYXJgLgoKIyMjIyBUb29scyBmb3IgRGF0YSBBbmFseXNpcwoKSSB1c2VkIFJTdHVkaW8gZm9yIGFsbCBvZiBteSBkYXRhIGFuYWx5c2lzLiBXaXRoaW4gUlN0dWRpbyBJIHVzZWQgdGhlc2UgcGFja2FnZXMuLi4KCi0gYHRpZHl2ZXJzZWAgLSBpbnRlZ3JhdGVkIHNldCBvZiB0b29scyBmb3Igd29ya2luZyB3aXRoIGRhdGEgaW4gUgotIGBqYW5pdG9yYCAtIHVzZWQgZm9yIGRhdGEgY2xlYW5pbmcgYW5kIHByZXBlcmF0aW9uCi0gYGx1YnJpZGF0ZWAgLSBwcm92aWRlcyBhIHNldCBvZiBmdW5jdGlvbnMgdG8gd29yayB3aXRoIGRhdGVzIGFuZCB0aW1lcwotIGBzcG90aWZ5cmAgLSBmb3Igd29ya2luZyB3aXRoIHRoZSBTcG90aWZ5IFdlYiBBUEkKLSBgaW5mZXJgIC0gdXNlZCBmb3IgaHlwb3RoZXNpcyB0ZXN0aW5nCi0gYG1vZGVscmAgLSBtYWtlcyBpdCBlYXNpZXIgdG8gd29yayBvbiBzdGF0aXN0aWNhbCBtb2RlbHMKLSBgZ2dmb3J0aWZ5YCAtIGVuaGFuY2luZyB2aXN1YWxpc2F0aW9ucyBvZiBnZ3Bsb3QyCi0gYEdHYWxseWAgLSBzZXQgb2YgdG9vbHMgZm9yIGNyZWF0aW5nIGFuZCBjb21wYXJpbmcgbXVsdGlwbGUgcGxvdHMKLSBgbW9zYWljYCAtIHVzZWQgZm9yIG1vZGVsIGNvbXBhcmlzb24gKEFOT1ZBIHRlc3QpCi0gYHBST0NgIC0gZm9yIHZpc3VhbGlzYXRpb24gb2Ygcm9jIGN1cnZlcyBkdXJpbmcgbG9naXN0aWMgcmVncmVzc2lvbgoKIyMjIyBEZXNjcmlwdGl2ZSwgRGlhZ25vc3RpYywgUHJlZGljdGl2ZSBhbmQgUHJlc2NyaXB0aXZlIEFuYWx5c2lzCgotIE15IGFuYWx5c2lzIGZhbGxzIHVuZGVyIF9fRGlhZ25vc3RpYyBBbmFseXRpY3NfXyBhcyBpdCBoZWxwcyB1cyB1bmRlcnN0YW5kIHdoeSBzb25ncyBoYXZlIGJlZW4gZ2l2ZW4gYSBjZXJ0YWluIHBvcHVsYXJpdHkgc2NvcmUuIEkgdXNlZCBtb2RlbCBidWlsZGluZyB0byBmaW5kIGNvcnJlbGF0aW9ucywgdG8gaGVscCBleHBsYWluIHdoYXQgZ2l2ZXMgYSBzb25nIGEgaGlnaCBwb3B1bGFyaXR5IHNjb3JlIG9uIFNwb3RpZnkuIAoKCg==</div>
 
 
 
