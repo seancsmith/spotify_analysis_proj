@@ -17,7 +17,9 @@ output: html_notebook
 
 #### Internal and External Data Sources
 
-- For this project I used a combination of 3 externally sourced datasets. These were all taken from Kaggle. All of these were created using the Spotify Web API. The main dataset originally contained 169,000 rows with each row providing information about 1 song. 
+- For this project I used a combination of 3 externally sourced datasets. These were all taken from Kaggle. All of these were created using the Spotify Web API. The main dataset originally contained 169,000 rows with each row providing information about 1 song. Each row originially had 19 columns with information about each track.
+
+- When the datasets were joined and cleaned ready for analysis, there were 121,656 rows with 22 columns. There were less rows as I removed everything before 1960, this was due to inconsistencies and lack of information. There were a few more columns as we gained `genre` and `number of followers` from the join, as well as a couple of columns I created.
 
 #### Type of Data
 
