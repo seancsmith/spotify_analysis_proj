@@ -19,19 +19,19 @@ spotify_data <- read_csv("raw_data/spotify_data.csv")
 ```
 
 
-## Hypothesis Tests on Audio Features
+### Hypothesis Tests on Audio Features
+
+This is an example of the hypothesis tests which were carried out on each audio feature. Please see hyp_testing.Rmd for full hypothesis testing.
 
 Two sample - independent tests
-
-This is an example of the hypothesis tests which were carried out on each audio feature.
 
 H0: The mean danceability in 1960s is the same as the mean danceability in 2010s
 
 Ha: The mean danceability in 1960s is less than the mean danceability in 2010s
 
 H0: The difference in means in 0
-Ha: danceability2020 - danceability1960 > 0
-```{r include=FALSE}
+Ha: danceability2020 - danceability1960 <> 0
+```{r echo=FALSE, message=FALSE, warning=TRUE}
 dance_decade_hyp <- spotify_data_clean_join %>% 
   select(decade, danceability) %>% 
   filter(decade == 1960 | decade == 2010) %>% 
@@ -47,17 +47,26 @@ observed_stat <- dance_decade_hyp %>%
   specify(danceability ~ decade) %>%
   calculate(stat = "diff in means", order = c("2010", "1960"))
 
-null_distribution %>%
-  visualise() +
-  shade_p_value(obs_stat = observed_stat, direction = "right")
-
 p_value <- null_distribution %>%
-  get_p_value(obs_stat = observed_stat, direction = "right")
+  get_p_value(obs_stat = observed_stat, direction = "both")
+
 ```
 
-### How do the audio features change over time
+```{r echo=FALSE}
+null_distribution %>%
+  visualise() +
+  shade_p_value(obs_stat = observed_stat, direction = "both")
+```
 
-```{r}
+- With a p-value < 0.001 we can reject our null hypothesis in favour for the alternative. So we can say with confidence that the difference in means between 1960 and 2010 is statistically significant.
+
+- This was the case with all of the Audio Features.
+
+
+## Exploratory Analysis
+
+
+```{r include=FALSE}
 spotify_data_clean_pivot <- spotify_data_clean_join %>% 
   pivot_longer(cols = acousticness:valence,
               names_to = "audio_feature",
@@ -67,13 +76,13 @@ spotify_data_clean_pivot <- spotify_data_clean_join %>%
 ```
 
 
-Plot with all Audio Features
-```{r}
-audiot_features_all <- spotify_data_clean_pivot %>%
+```{r echo=FALSE}
+# Plot with all Audio Features
+audio_features_all <- spotify_data_clean_pivot %>%
   ggplot() +
   aes(x = year, y = avg_feature, group = audio_feature, 
       colour = audio_feature) +
-  geom_line(linewidth = 2) +
+  geom_line(linewidth = 1) +
   ylim(0, 100) +
   labs(x = "Year",
        y = "Value",
@@ -82,17 +91,20 @@ audiot_features_all <- spotify_data_clean_pivot %>%
        colour = "Audio Feature") +
   theme_bw() +
   scale_colour_brewer(palette =  "Dark2") +
-  theme(axis.text  = element_text(face = "bold", size = 18, family = "Times"),
-        axis.title  = element_text(face = "bold", size = 18, family = "Times"),
-        title = element_text(face = "bold", size = 15, family = "Times"),
-        legend.text = element_text(face = "bold", size = 14, family = "Times")
+  theme(axis.text  = element_text(face = "bold", size = 12, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 12, family = "Times"),
+        title = element_text(face = "bold", size = 14, family = "Times"),
+        legend.text = element_text(face = "bold", size = 10, family = "Times")
   ) 
 
-#ggsave(audiot_features_all, "plot_images/audio_features_all.png")
+#ggsave(audio_features_all, "plot_images/audio_features_all.png")
 ```
 
-Plot with audio features showing change
-```{r}
+- We can see a gradual rise in Danceability and Loudness, with a massive drop in Acousticness. 
+
+- Near the bottom we can see a rise in Speechiness from the 1980s, possibly due the rise in popularity of rap music. And the Instrumentalness decreases over time, showing people are listening significantly less instrumental music than they were in the 1960s.
+
+```{r eval=FALSE, include=FALSE}
 audio_features_cut <- spotify_data_clean_pivot %>%
     filter(audio_feature == "acousticness" |
            audio_feature == "instrumentalness" |
@@ -102,7 +114,7 @@ audio_features_cut <- spotify_data_clean_pivot %>%
   ggplot() +
   aes(x = year, y = avg_feature, group = audio_feature, 
       colour = audio_feature) +
-  geom_line(linewidth = 2) +
+  geom_line(linewidth = 1) +
   ylim(0, 100) +
   labs(x = "Year",
        y = "Value",
@@ -113,7 +125,6 @@ audio_features_cut <- spotify_data_clean_pivot %>%
   scale_colour_brewer(palette =  "Dark2") +
   scale_colour_discrete(labels = c("Acousticness", "Danceability", "Instrumentalness",
                                    "Loudness", "Speechiness")) +
-
   theme(axis.text  = element_text(face = "bold", size = 20, family = "Times"),
         axis.title  = element_text(face = "bold", size = 22, family = "Times"),
         title = element_text(face = "bold", size = 18, family = "Times"),
@@ -121,56 +132,68 @@ audio_features_cut <- spotify_data_clean_pivot %>%
         legend.title = element_blank()
   ) 
 
-ggsave("plot_images/audio_features_cut.png", dpi = 720, width = 12, height = 6)
-
-?ggsave
+#ggsave("plot_images/audio_features_cut.png", dpi = 720, width = 12, height = 6)
 ```
 
-```{r}
+```{r echo=FALSE}
 spotify_data_clean_join %>% 
-  #mutate(explicit = as.numeric(explicit)) %>% 
   group_by(year) %>% 
   summarise(total_ex = sum(explicit)) %>% 
   ggplot() +
   aes(x = year, y = total_ex / 20) +
-  geom_line(colour = "red", linewidth = 2) +
+  geom_line(colour = "red", linewidth = 1) +
   ylim(0, 50) +
   labs(x = "Year",
-       y = "Proportion")+
-       # title = "Proportion of Explicit Songs",
-       # subtitle = "by year") +
+       y = "Proportion",
+  title = "Proportion of Explicit Songs",
+subtitle = "by year") +
   theme_classic() +
-  theme(axis.text  = element_text(face = "bold", size = 18, family = "Times"),
-        axis.title  = element_text(face = "bold", size = 22, family = "Times"),
-        title = element_text(face = "bold", size = 18, family = "Times"),
-        legend.text = element_text(face = "bold", size = 14, family = "Times")
+  theme(axis.text  = element_text(face = "bold", size = 12, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 12, family = "Times"),
+        title = element_text(face = "bold", size = 14, family = "Times"),
+        legend.text = element_text(face = "bold", size = 10, family = "Times")
   ) 
 
-ggsave("plot_images/explicit.png", dpi = 720, width = 10, height = 6)
+#ggsave("plot_images/explicit.png", dpi = 720, width = 10, height = 6)
 ```
-```{r}
+- Here we see a fairly steep rise in the proportion of explicit songs from around 1980. This peaks at almost 50% in 2018.
+
+```{r echo=FALSE}
 spotify_data_clean_join %>% 
   group_by(year) %>% 
   summarise(mean_pop = mean(popularity)) %>% 
   ggplot() +
   aes(x = year, y = mean_pop) +
-  geom_line(colour = "purple2", linewidth = 2) +
+  geom_line(colour = "purple2", linewidth = 1) +
   labs(x = "Year",
-       y = "Popularity") +
+       y = "Popularity",
+       title = "Mean Popularity Score",
+       subtitle = "by Year") +
   ylim(0, 100) +
   theme_bw() +
   scale_colour_brewer(palette =  "Dark2") +
-  theme(axis.text  = element_text(face = "bold", size = 18, family = "Times"),
-        axis.title  = element_text(face = "bold", size = 22, family = "Times"),
-        title = element_text(face = "bold", size = 18, family = "Times"),
-        legend.text = element_text(face = "bold", size = 14, family = "Times")
+  theme(axis.text  = element_text(face = "bold", size = 12, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 12, family = "Times"),
+        title = element_text(face = "bold", size = 14, family = "Times"),
+        legend.text = element_text(face = "bold", size = 10, family = "Times")
   ) 
 
-ggsave("plot_images/avg_pop.png", dpi = 720, width = 10, height = 6)
+#ggsave("plot_images/avg_pop.png", dpi = 720, width = 10, height = 6)
 
 ```
+- The gradual rise in the mean popularity score tells us that the Spotify algorithm for calculating the popularity score is affected heavily by how recently the song was released.
 
-```{r}
+```{r echo=FALSE}
+spotify_data_for_modelling <- spotify_data_clean_join %>% 
+  mutate(decade = as.factor(decade)) %>% 
+  select(-c(artists, track_name, id, genres, followers))
+
+n_data <- nrow(spotify_data_for_modelling)
+
+sample_index <- sample(1:n_data, size = n_data*0.1)
+
+spot_sample <- slice(spotify_data_for_modelling, sample_index)
+
 spot_sample %>% 
   ggplot() +
   aes(x = danceability, y = popularity) +
@@ -179,17 +202,19 @@ spot_sample %>%
   labs(x = "Danceability",
        y = "Popularity") +
        theme_classic() +
-  theme(axis.text  = element_text(face = "bold", size = 18, family = "Times"),
-        axis.title  = element_text(face = "bold", size = 20, family = "Times"),
-        title = element_text(face = "bold", size = 18, family = "Times"),
-        legend.text = element_text(face = "bold", size = 14, family = "Times")
+  theme(axis.text  = element_text(face = "bold", size = 12, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 12, family = "Times"),
+        title = element_text(face = "bold", size = 14, family = "Times"),
+        legend.text = element_text(face = "bold", size = 10, family = "Times")
   )
 
 #ggsave("plot_images/pop_vs_dance.png", dpi = 720, width = 10, height = 6)
 
 ```
+- We're starting to concentrate a bit more on correlations between Popularity score and our other variables. Here we see a linear relationship between Popularity and Danceability. I used a sample of the data to show this.
 
-```{r}
+
+```{r echo=FALSE}
 spot_sample %>% 
   ggplot() +
   aes(x = loudness, y = popularity) +
@@ -198,29 +223,27 @@ spot_sample %>%
   labs(x = "Loudness",
        y = "Popularity") +
        theme_classic() +
-  theme(axis.text  = element_text(face = "bold", size = 18, family = "Times"),
-        axis.title  = element_text(face = "bold", size = 22, family = "Times"),
-        title = element_text(face = "bold", size = 18, family = "Times"),
-        legend.text = element_text(face = "bold", size = 14, family = "Times")
+  theme(axis.text  = element_text(face = "bold", size = 12, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 12, family = "Times"),
+        title = element_text(face = "bold", size = 14, family = "Times"),
+        legend.text = element_text(face = "bold", size = 10, family = "Times")
   )
 
-ggsave("plot_images/pop_vs_loud.png", dpi = 720, width = 10, height = 6)
+#ggsave("plot_images/pop_vs_loud.png", dpi = 720, width = 10, height = 6)
 
 ```
 
+- Again using a sample of the data, we can see another positive linear relationship between Popularity and Loudness. These will help with our explanatory model building.
+
 ### Intro To Linear Regression
 
-To help me answer my question of what makes a song "popular" on spotify, I decided to build an explanatory linear regression model. 
+- To help me answer my question of what makes a song "popular" on spotify, I decided to build an explanatory linear regression model. This type of analysis is used to determine the strength of the relationship between a response variable and multiple explanatory variables.
 
-This type of analysis is used to determine the strength of the relationship between a response variable and multiple explanatory variables.
+- So in this case I will be choosing from all of the variables I have just discussed to explain the popularity of a song on spotify.
 
-So in this case I will be choosing from all of the variables I have just discussed to explain the popularity of a song on spotify.
+- popularity = b0 + b1x1 + b2x2 + b3x3....bnxn
 
-y = b0 + b1x1 + b2x2 + b3x3....bnxn
-
-popularity = b0 + b1x1 + b2x2 + b3x3....bnxn
-
-To start this process I plot popularity against each one of my variables or possible explanatory variables and find the strongest correlation.
+- To start this process I plot popularity against each one of my variables or possible explanatory variables and find the strongest correlation.
 
 ```{r}
 n_data <- nrow(spotify_data_for_modelling)
@@ -233,27 +256,18 @@ spot_sample %>%
   ggplot() +
   aes(x = year, y = popularity) +
   geom_point(alpha = 0.7, colour = "#1DB954") +
-  geom_smooth(method = "lm", se = FALSE, colour = "purple2") +
+  geom_smooth(method = "lm", se = FALSE, colour = "purple2", linewidth = 2) +
   theme_classic() +
   labs(x = "Year",
        y = "Popularity") +
-  theme(axis.text  = element_text(face = "bold", size = 18, family = "Times"),
-        axis.title  = element_text(face = "bold", size = 18, family = "Times"),
-        title = element_text(face = "bold", size = 18, family = "Times"),
-        legend.text = element_text(face = "bold", size = 14, family = "Times")
+  theme(axis.text  = element_text(face = "bold", size = 12, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 12, family = "Times"),
+        title = element_text(face = "bold", size = 14, family = "Times"),
+        legend.text = element_text(face = "bold", size = 10, family = "Times")
   )
 
 #ggsave("plot_images/pop_vs_dance.png", dpi = 720, width = 10, height = 6)
 ```
-
-```{r}
-spot_sample %>% 
-  ggplot() +
-  aes(x = explicit, y = popularity) +
-  geom_point(alpha = 0.7, colour = "red4") +
-  geom_smooth(method = "lm", se = FALSE)
-```
-
 
 My strongest correlation was year (the year the track was released) with a correlation of 0.74. I then add this to my model as my first explanatory variable.
 
@@ -511,7 +525,6 @@ roc_curve
 ggsave("plot_images/log_best_model.png", dpi = 720, width = 12, height = 6)
 
 ```
-
 
 
 

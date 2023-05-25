@@ -129,13 +129,14 @@ write_csv(spotify_genres_modelling, "clean_data/spotify_genres_modelling.csv")
 
 
 
+
+
 Unfinished Cleaning for Sentiment Analysis
 ```{r}
 track_text <- spotify_data_clean_join %>% 
   select(track_name) %>% 
   unnest_tokens(word, track_name) %>% 
-    inner_join(get_sentiments("bing"), by = "word") %>% 
-  group_by(track_name)
+    inner_join(get_sentiments("bing"), by = "word")
 
 ```
 
@@ -146,11 +147,7 @@ track_words <- spotify_data_clean_join %>%
    count(word, sort = TRUE) %>%
   anti_join(stop_words) %>%   
   inner_join(get_sentiments("afinn")) %>% 
-  mutate(sentiment_score = sum(value)) 
-  
-ggplot() +
-  aes(x = year, y = sentiment_score) +
-  geom_line()
+  mutate(sentiment_score = sum(value))
 
 ```
 
