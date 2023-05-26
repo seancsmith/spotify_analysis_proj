@@ -124,6 +124,7 @@ model_2a <- lm(popularity ~ year + loudness,
 
 summary(model_2a)
 ```
+
 ```{r}
 model_2b <- lm(popularity ~ year + explicit,
                data = train_lm)
@@ -169,6 +170,14 @@ model_6a <- lm(popularity ~ year + danceability + loudness + liveness + explicit
                data = train_lm)
 
 summary(model_6a)
+``` 
+
+```{r}
+model_6b <- lm(popularity ~ year + danceability + loudness + liveness + explicit,
+               data = test_lm)
+
+summary(model_6b)
+
 ``` 
 
 ```{r}

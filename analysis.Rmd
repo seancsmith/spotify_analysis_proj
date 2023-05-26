@@ -200,7 +200,8 @@ spot_sample %>%
   geom_point(colour = "#1DB954", alpha = 0.8) +
   geom_smooth(method = "lm", se = FALSE, colour = "purple3", linewidth = 2) +
   labs(x = "Danceability",
-       y = "Popularity") +
+       y = "Popularity",
+       title = "Popularity vs Danceability") +
        theme_classic() +
   theme(axis.text  = element_text(face = "bold", size = 12, family = "Times"),
         axis.title  = element_text(face = "bold", size = 12, family = "Times"),
@@ -221,7 +222,8 @@ spot_sample %>%
   geom_point(colour = "#1DB954", alpha = 0.6) +
   geom_smooth(method = "lm", se = FALSE, colour = "purple3", linewidth = 2) +
   labs(x = "Loudness",
-       y = "Popularity") +
+       y = "Popularity",
+       title = "Popularity vs Loudness") +
        theme_classic() +
   theme(axis.text  = element_text(face = "bold", size = 12, family = "Times"),
         axis.title  = element_text(face = "bold", size = 12, family = "Times"),
@@ -235,18 +237,37 @@ spot_sample %>%
 
 - Again using a sample of the data, we can see another positive linear relationship between Popularity and Loudness. These will help with our explanatory model building.
 
-### Intro To Linear Regression
+```{r include=FALSE}
+spotify_data_for_modelling <- spotify_data_clean_join %>% 
+  mutate(decade = as.factor(decade)) %>% 
+  select(-c(artists, track_name, id, genres, followers))
+```
+
+```{r include=FALSE}
+n_data <- nrow(spotify_data_for_modelling)
+
+test_index <- sample(1:n_data, size = n_data*0.2)
+
+train_lm <- slice(spotify_data_for_modelling, -test_index)
+test_lm <- slice(spotify_data_for_modelling, test_index)
+
+options(scipen = 999)
+
+alias(popularity ~ ., 
+      data = train_lm)
+```
+
+### Linear Regression Model Build
 
 - To help me answer my question of what makes a song "popular" on spotify, I decided to build an explanatory linear regression model. This type of analysis is used to determine the strength of the relationship between a response variable and multiple explanatory variables.
 
-- So in this case I will be choosing from all of the variables I have just discussed to explain the popularity of a song on spotify.
-
 - popularity = b0 + b1x1 + b2x2 + b3x3....bnxn
+
+- While working on this model building I used a 80-20 Train, Test split method. Meaning I worked on 80% of the data then testing my outcome on the remaning 20%. 
 
 - To start this process I plot popularity against each one of my variables or possible explanatory variables and find the strongest correlation.
 
-```{r}
-n_data <- nrow(spotify_data_for_modelling)
+```{r echo=FALSE}
 
 sample_index <- sample(1:n_data, size = n_data*0.1)
 
@@ -259,7 +280,8 @@ spot_sample %>%
   geom_smooth(method = "lm", se = FALSE, colour = "purple2", linewidth = 2) +
   theme_classic() +
   labs(x = "Year",
-       y = "Popularity") +
+       y = "Popularity",
+       title = "Popularity vs Year") +
   theme(axis.text  = element_text(face = "bold", size = 12, family = "Times"),
         axis.title  = element_text(face = "bold", size = 12, family = "Times"),
         title = element_text(face = "bold", size = 14, family = "Times"),
@@ -267,88 +289,75 @@ spot_sample %>%
   )
 
 #ggsave("plot_images/pop_vs_dance.png", dpi = 720, width = 10, height = 6)
+
 ```
 
-My strongest correlation was year (the year the track was released) with a correlation of 0.74. I then add this to my model as my first explanatory variable.
+- My strongest correlation was year (the year the track was released) with a correlation of 0.74. I then add this to my model as my first explanatory variable.
 
-```{r}
+```{r echo=TRUE}
 model_1a <- lm(popularity ~ year,
                data = train_lm)
 
 summary(model_1a)
 ```
 
-After running my model I'm looking at 3 factors:
- - The P-value - is this variable making a significant difference. If the P-value is below the significance level of 0.05 then we can reject the null hypothesis and conclude that correlation between the variables is significant
- 
- - The R^2 - is a measure that indicates how much of the variation of popularity is explained by the year
- - The adjusted R^2 - compensates for the addition of variables. So as we're building an explanatory model, we don't want this to drop much lower than the r^2.
+After running my model I'm looking at 3 factors
 
-```{r}
+- The P-value - is this variable making a significant difference. If the P-value is below the significance level of 0.05 then we can reject the null hypothesis and conclude that correlation between the variables is significant
+
+- The R^2 - is a measure that indicates how much of the variation of popularity is explained by the year
+
+- The adjusted R^2 - compensates for the addition of variables. So as we're building an explanatory model, we don't want this to drop much lower than the R^2.
+
+```{r include=FALSE}
 model_3a <- lm(popularity ~ year + danceability + loudness,
                data = train_lm)
 
 summary(model_3a)
 ```
 
-```{r}
+```{r include=FALSE}
 model_3b <- lm(popularity ~ year + danceability + instrumentalness,
                data = train_lm)
 
 summary(model_3b)
 ```
 
-```{r}
+<br />
+
+#### Anova Test
+I used __anova__ (Analysis of Variance) tests to check that the difference between my new model and previous models was significant.
+```{r echo=TRUE}
 anova(model_3a, model_2c)
 ```
+<br />
 
-Final Model
+#### Final Linear Regression Model
 
-```{r}
+```{r echo=TRUE}
 model_6a <- lm(popularity ~ year + danceability + loudness + liveness + explicit,
                data = train_lm)
 
 summary(model_6a)
 ``` 
 
-So here we have our final model. I stopped adding variables as the Adjusted r^2 started dropping and our multiple r^2 was barely going up.
+- So here we have the final model. I stopped adding variables as the Adjusted r^2 started dropping and our multiple r^2 was barely going up.
 
-So we can see that the more recent the release, the more danceability, the louder it is, the less liveness it has. So you don't want a live recording, you want a studio recording with some explicit lyrics chucked in there as well.
+- All of our P-Values are significant and we have a Multiple R^2 of 0.55, with an adjusted R^2 also of 0.55. This means that 55% of the variance in popularity is explained our other variables. 
 
-All of our P-Values are significant and we have a Multiple r^2 of 0.55, with an adjusted r^2 also of 0.55. This means that 55% of the variance in popularity is explained our other variables. Which  also means that 45% of the variability in the data cannot be explained by this model.
+- This suggests that the model has moderate explanatory power, as about half of the data points can be accounted for by the linear regression line. However, it also tells us that there is a large portion of the variability that remains unexplained and might be attributed to other factors not included in the model.
 
-55% isn't a very high proportion but it's not terrible. We are trying to measure the popularity of a song. It's not quite as obvious as if we were trying to explain the value of a house. We might find that the postcode and the number of rooms goes a long way to explaining that value. I think explaining the popularity of a song is bit more complicated than that. If it was easy to know what made a song popular then we'd all be musicians.
+### Logistic Regression Model Build
 
-Mention human behaviour, mention the basic practice of statistics would call this a moderate effect size. 
+- Logistic regression is a statistical analysis method to predict, or explain a binary outcome, such as yes or no, based on prior observations of a data set.
 
+- So rather than using the popularity score I have used the variable I created called is_popular, which splits the data in to a logical type, so it's TRUE if the song has a popularity score of 50 and above.
 
-```{r}
-model_6b <- lm(popularity ~ year + danceability + loudness + liveness + explicit,
-               data = test_lm)
+- The way this is built is very similar to the linear model. I look for correlations, and I add them to my model 1 at a time, check they are significant. The main difference is that I'm looking for for a high AUC score this time, rather than the multiple R^2 I was looking for in the linear model.
 
-summary(model_6b)
+- I decided to no longer include the year or decade the song was released for this model. It had such a large influence on the linear model I thought it would be more interesting to see how the logistic model fared without it. Also, if we're building a model to assist with the writing of a current day "popular" song, then including variables such as year and decade are of no help.
 
-``` 
-
-So my model isn't great. What can I do to improve this? Well...
-
-When I was researching how spotify calculate their popularity score I kept coming across this one phrase.
-
-### 50 is the magic number
-
-The higher your popularity index, the more likely the algorithm is to recommend you to new listeners, and place you in algorithmic playlists like Release Radar and Discover Weekly. Many websites and blogs had theories on what number you had to hit to be added to certain editorial playlists. 
-
-DIYMusician suggests that and popularity of 20+ in the first few weeks of release will get you onto the Release Radar playlist and a popularity score of 30+ will get you onto Discover Weekly. Loudlab suggested that 50 is the magic number. I liked this idea of having a threshold of whether or not a song is popular. So going back to my variables I created a column called is_popular which is only TRUE if the popularity of the song is 50 or over. This also lends itself nicely to a logistic regression model. 
-
-Logistic regression is a statistical analysis method to predict, or explain a binary outcome, such as yes or no, based on prior observations of a data set.
-
-So rather than using the popularity score I have used the variable I created called is_popular, which splits the data in to a logical type, so it's TRUE if the song is 50 or above.
-
-The way this is built is very similar to the linear model. I look for correlations, and I add them to my model 1 at a time, check they are significant. The main difference is that I'm looking for for a high AUC score this time, rather than the multiple r^squared I was looking for in the linear model.
-
-I'll explain the AUC in a second. I decided for this model to make a couple of changes. I decided to no longer include the year or decade the song was released. If I'm staying true to my original question then how could I possibly write a song that was released in the past. It had such a large influence on the linear model I thought it would be more interesting to see how the logistic model fared without it. And then I can test my model against different decades to see how it performs.
-
-```{r}
+```{r eval=FALSE, include=FALSE}
 spot_sample %>% 
   mutate(explicit = as.logical(explicit)) %>% 
   ggplot() +
@@ -369,7 +378,7 @@ spot_sample %>%
 ```
 
 
-```{r}
+```{r eval=FALSE, include=FALSE}
 spot_sample %>% 
   mutate(explicit = as.logical(explicit)) %>%
 ggplot() +
@@ -396,14 +405,30 @@ ggplot() +
 ```
 
 
-Final Logistic Regression Model
-```{r}
+#### Final Logistic Regression Model
+
+```{r include=FALSE}
+n_data <- nrow(spotify_data_for_modelling)
+
+test_index <- sample(1:n_data, size = n_data*0.2)
+
+train_log_mod <- slice(spotify_data_for_modelling, -test_index)
+test_log_mod <- slice(spotify_data_for_modelling, test_index)
+
+options(scipen = 999)
+
+```
+
+```{r echo=TRUE}
 model_4_final <- glm(is_popular ~ loudness + explicit + danceability + no_of_artists,
              family = "binomial",
              data = train_log_mod)
 
 summary(model_4_final)
+```
 
+
+```{r include=FALSE}
 tidy(model_4_final)
 
 train_model_4_final <- train_log_mod %>%
@@ -411,17 +436,28 @@ train_model_4_final <- train_log_mod %>%
 
 roc_obj_mod4 <- train_model_4_final %>%
   roc(response = is_popular, predictor = pred)
+```
 
+
+
+```{r echo=FALSE}
 roc_curve <- ggroc(
   data = list(
-    best_model = roc_obj_mod4
+    model_4_final = roc_obj_mod4
   ), 
   legacy.axes = TRUE) +
+  labs(x = "1 - Specificity",
+       y = "Sensitivity",
+       title = "Logistic Regression Model",
+       subtitle = "ROC Curve") +
   coord_fixed() + 
   theme_classic()
 
 auc(roc_obj_mod4)
+
+roc_curve
 ```
+
 
 
 ```{r}
