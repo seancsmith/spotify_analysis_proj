@@ -1,0 +1,680 @@
+---
+title: "What Makes a Song Popular on Spotify?"
+output:
+  html_document:
+    df_print: paged
+---
+
+```{r include=FALSE}
+library(spotifyr)
+library(tidyverse)
+library(modelr)
+library(infer)
+library(modelr)
+library(ggfortify)
+library(GGally)
+library(pROC)
+library(broom)
+```
+
+```{r include=FALSE}
+spotify_data_clean_join <- read_csv("clean_data/spotify_clean_join.csv")
+spotify_data <- read_csv("raw_data/spotify_data.csv")
+```
+
+#### Introduction
+
+This is the main analysis for my project where I am looking to explain what makes a song popular on Spotify. In this document there is:
+
+- A brief intro to the Audio Features
+- An example of hypothesis testing which was carried out on Audio Features
+- Exploratory analysis
+- Linear Regression Model
+- Logistic Regression Model
+- Genre Analysis
+
+<br />
+__The Variables - Audio Features__
+
+Here are the audio features which we’re going to be mostly focusing on. How do these help explain the popularity of a song? 
+
+__Acousticness__ - detects the presence of acoustic instruments
+
+__Danceability__ - based on rhythm stability and beat strength
+
+__Energy__ - measure of intensity and activity
+
+__Instrumentalness__ - the higher the score, the less vocals the track contains
+
+__Liveness__ - detects the presence of an audience or if the track was recorded live
+
+__Loudness__ - how loud the track is
+
+__Speechiness__ - detects the presence of spoken word, giving rap music a higher score than opera
+
+__Valence__ - how positive the track is, the higher the score the generally happier the feel of the track
+
+<br />
+
+#### __Hypothesis Tests on Audio Features__
+
+This is an example of the (difference in means) hypothesis testing which was carried out on each audio feature. Please see hyp_testing.Rmd for full hypothesis testing.
+
+__Two sample - independent tests__
+
+H0: The mean danceability in 1960s is the same as the mean danceability in 2010s
+
+Ha: The mean danceability in 1960s is less than the mean danceability in 2010s
+
+H0: The difference in means in 0
+Ha: danceability2020 - danceability1960 <> 0
+```{r message=FALSE, warning=TRUE, include=FALSE}
+dance_decade_hyp <- spotify_data_clean_join %>% 
+  select(decade, danceability) %>% 
+  filter(decade == 1960 | decade == 2010) %>% 
+  mutate(decade = as.factor(decade))
+
+null_distribution <- dance_decade_hyp %>% 
+  specify(danceability ~ decade) %>% 
+  hypothesize(null = "independence") %>% 
+  generate(reps = 5000, type = "permute") %>% 
+  calculate(stat = "diff in means", order = c("2010", "1960")) 
+
+observed_stat <- dance_decade_hyp %>% 
+  specify(danceability ~ decade) %>%
+  calculate(stat = "diff in means", order = c("2010", "1960"))
+
+p_value <- null_distribution %>%
+  get_p_value(obs_stat = observed_stat, direction = "both")
+
+```
+
+```{r echo=FALSE}
+null_distribution %>%
+  visualise() +
+  shade_p_value(obs_stat = observed_stat, direction = "both")
+```
+
+- With a p-value < 0.001 we can reject our null hypothesis in favour for the alternative. So we can say with confidence that the difference in means between 1960 and 2010 is statistically significant.
+
+- This was the case with all of the Audio Features.
+
+
+## Exploratory Analysis
+
+
+```{r include=FALSE}
+spotify_data_clean_pivot <- spotify_data_clean_join %>% 
+  pivot_longer(cols = acousticness:valence,
+              names_to = "audio_feature",
+              values_to = "value") %>% 
+  group_by(year, audio_feature) %>% 
+  mutate(avg_feature = mean(value))
+```
+
+
+```{r echo=FALSE, fig.width=10}
+# Plot with all Audio Features
+# fi.width set for html purposes
+audio_features_all <- spotify_data_clean_pivot %>%
+  ggplot() +
+  aes(x = year, y = avg_feature, group = audio_feature, 
+      colour = audio_feature) +
+  geom_line(linewidth = 1) +
+  ylim(0, 100) +
+  labs(x = "Year",
+       y = "Value",
+       title = "Audio Features Over Time",
+       subtitle = "Avg per year",
+       colour = "Audio Feature") +
+  theme_bw() +
+  scale_colour_brewer(palette =  "Dark2") +
+  theme(axis.text  = element_text(face = "bold", size = 12, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 12, family = "Times"),
+        title = element_text(face = "bold", size = 14, family = "Times"),
+        legend.text = element_text(face = "bold", size = 10, family = "Times")
+  ) 
+
+audio_features_all
+#ggsave(audio_features_all, "plot_images/audio_features_all.png")
+```
+
+- We can see a gradual rise in Danceability and Loudness, with a massive drop in Acousticness. 
+
+- Near the bottom we can see a rise in Speechiness from the 1980s, possibly due the rise in popularity of rap music. And the Instrumentalness decreases over time, showing people are listening significantly less instrumental music than they were in the 1960s.
+
+```{r eval=FALSE, include=FALSE}
+audio_features_cut <- spotify_data_clean_pivot %>%
+    filter(audio_feature == "acousticness" |
+           audio_feature == "instrumentalness" |
+           audio_feature == "danceability" |
+           audio_feature == "speechiness" |
+           audio_feature == "loudness") %>% 
+  ggplot() +
+  aes(x = year, y = avg_feature, group = audio_feature, 
+      colour = audio_feature) +
+  geom_line(linewidth = 1) +
+  ylim(0, 100) +
+  labs(x = "Year",
+       y = "Value",
+       # title = "Audio Features by Release Year",
+       # subtitle = "Avg per year",
+       colour = "Audio Feature") +
+  theme_bw() +
+  scale_colour_brewer(palette =  "Dark2") +
+  scale_colour_discrete(labels = c("Acousticness", "Danceability", "Instrumentalness",
+                                   "Loudness", "Speechiness")) +
+  theme(axis.text  = element_text(face = "bold", size = 20, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 22, family = "Times"),
+        title = element_text(face = "bold", size = 18, family = "Times"),
+        legend.text = element_text(face = "bold", size = 20, family = "Times"),
+        legend.title = element_blank()
+  ) 
+
+#ggsave("plot_images/audio_features_cut.png", dpi = 720, width = 12, height = 6)
+```
+
+```{r echo=FALSE}
+spotify_data_clean_join %>% 
+  group_by(year) %>% 
+  summarise(total_ex = sum(explicit)) %>% 
+  ggplot() +
+  aes(x = year, y = total_ex / 20) +
+  geom_line(colour = "red", linewidth = 1) +
+  ylim(0, 50) +
+  labs(x = "Year",
+       y = "Proportion",
+  title = "Proportion of Explicit Songs",
+subtitle = "by year") +
+  theme_classic() +
+  theme(axis.text  = element_text(face = "bold", size = 12, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 12, family = "Times"),
+        title = element_text(face = "bold", size = 14, family = "Times"),
+        legend.text = element_text(face = "bold", size = 10, family = "Times")
+  ) 
+
+#ggsave("plot_images/explicit.png", dpi = 720, width = 10, height = 6)
+```
+
+
+- Here we see a fairly steep rise in the proportion of explicit songs from around 1980. This peaks at almost 50% in 2018.
+
+<br />
+
+```{r echo=FALSE}
+spotify_data_clean_join %>% 
+  group_by(year) %>% 
+  summarise(mean_pop = mean(popularity)) %>% 
+  ggplot() +
+  aes(x = year, y = mean_pop) +
+  geom_line(colour = "purple2", linewidth = 1) +
+  labs(x = "Year",
+       y = "Popularity",
+       title = "Mean Popularity Score",
+       subtitle = "by Year") +
+  ylim(0, 100) +
+  theme_bw() +
+  scale_colour_brewer(palette =  "Dark2") +
+  theme(axis.text  = element_text(face = "bold", size = 12, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 12, family = "Times"),
+        title = element_text(face = "bold", size = 14, family = "Times"),
+        legend.text = element_text(face = "bold", size = 10, family = "Times")
+  ) 
+
+#ggsave("plot_images/avg_pop.png", dpi = 720, width = 10, height = 6)
+
+```
+
+
+- The gradual rise in the mean popularity score tells us that the Spotify algorithm for calculating the popularity score is affected heavily by how recently the song was released.
+
+<br />
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+spotify_data_for_modelling <- spotify_data_clean_join %>% 
+  mutate(decade = as.factor(decade)) %>% 
+  select(-c(artists, track_name, id, genres, followers))
+
+n_data <- nrow(spotify_data_for_modelling)
+
+sample_index <- sample(1:n_data, size = n_data*0.1)
+
+spot_sample <- slice(spotify_data_for_modelling, sample_index)
+
+spot_sample %>% 
+  ggplot() +
+  aes(x = danceability, y = popularity) +
+  geom_point(colour = "#1DB954", alpha = 0.8) +
+  geom_smooth(method = "lm", se = FALSE, colour = "purple3", linewidth = 2) +
+  labs(x = "Danceability",
+       y = "Popularity",
+       title = "Popularity vs Danceability") +
+       theme_classic() +
+  theme(axis.text  = element_text(face = "bold", size = 12, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 12, family = "Times"),
+        title = element_text(face = "bold", size = 14, family = "Times"),
+        legend.text = element_text(face = "bold", size = 10, family = "Times")
+  )
+
+#ggsave("plot_images/pop_vs_dance.png", dpi = 720, width = 10, height = 6)
+
+```
+
+
+- We're starting to concentrate a bit more on correlations between Popularity score and our other variables. Here we see a linear relationship between Popularity and Danceability. I used a sample of the data to show this.
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+spot_sample %>% 
+  ggplot() +
+  aes(x = loudness, y = popularity) +
+  geom_point(colour = "#1DB954", alpha = 0.6) +
+  geom_smooth(method = "lm", se = FALSE, colour = "purple3", linewidth = 2) +
+  labs(x = "Loudness",
+       y = "Popularity",
+       title = "Popularity vs Loudness") +
+       theme_classic() +
+  theme(axis.text  = element_text(face = "bold", size = 12, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 12, family = "Times"),
+        title = element_text(face = "bold", size = 14, family = "Times"),
+        legend.text = element_text(face = "bold", size = 10, family = "Times")
+  )
+
+#ggsave("plot_images/pop_vs_loud.png", dpi = 720, width = 10, height = 6)
+
+```
+
+- Again using a sample of the data, we can see another positive linear relationship between Popularity and Loudness. These will help with our explanatory model building.
+
+```{r include=FALSE}
+spotify_data_for_modelling <- spotify_data_clean_join %>% 
+  mutate(decade = as.factor(decade)) %>% 
+  select(-c(artists, track_name, id, genres, followers))
+```
+
+```{r include=FALSE}
+n_data <- nrow(spotify_data_for_modelling)
+
+test_index <- sample(1:n_data, size = n_data*0.2)
+
+train_lm <- slice(spotify_data_for_modelling, -test_index)
+test_lm <- slice(spotify_data_for_modelling, test_index)
+
+options(scipen = 999)
+
+alias(popularity ~ ., 
+      data = train_lm)
+```
+
+### Linear Regression Model Build
+
+- To help me answer my question of what makes a song "popular" on spotify, I decided to build an explanatory linear regression model. This type of analysis is used to determine the strength of the relationship between a response variable and multiple explanatory variables.
+
+- popularity = b0 + b1x1 + b2x2 + b3x3....bnxn
+
+- While working on this model building I used a 80-20 Train, Test split method. Meaning I worked on 80% of the data then testing my outcome on the remaining 20%. 
+
+- To start this process I plot popularity against each one of my variables or possible explanatory variables and find the strongest correlation.
+
+- For full linear model build see linear_model_build.Rmd
+
+```{r echo=FALSE, message=FALSE, warning=FALSE}
+
+sample_index <- sample(1:n_data, size = n_data*0.1)
+
+spot_sample <- slice(spotify_data_for_modelling, sample_index)
+
+spot_sample %>% 
+  ggplot() +
+  aes(x = year, y = popularity) +
+  geom_point(alpha = 0.7, colour = "#1DB954") +
+  geom_smooth(method = "lm", se = FALSE, colour = "purple2", linewidth = 2) +
+  theme_classic() +
+  labs(x = "Year",
+       y = "Popularity",
+       title = "Popularity vs Year") +
+  theme(axis.text  = element_text(face = "bold", size = 12, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 12, family = "Times"),
+        title = element_text(face = "bold", size = 14, family = "Times"),
+        legend.text = element_text(face = "bold", size = 10, family = "Times")
+  )
+
+#ggsave("plot_images/pop_vs_dance.png", dpi = 720, width = 10, height = 6)
+
+```
+
+- My strongest correlation was year (the year the track was released) with a correlation of 0.74. I then add this to my model as my first explanatory variable.
+
+```{r echo=TRUE}
+model_1a <- lm(popularity ~ year,
+               data = train_lm)
+
+summary(model_1a)
+```
+
+After running my model I'm looking at 3 factors
+
+- The P-value - is this variable making a significant difference. If the P-value is below the significance level of 0.05 then we can reject the null hypothesis and conclude that correlation between the variables is significant
+
+- The R^2 - is a measure that indicates how much of the variation of popularity is explained by the year
+
+- The adjusted R^2 - compensates for the addition of variables. So as we're building an explanatory model, we don't want this to drop much lower than the R^2.
+
+```{r include=FALSE}
+model_2c <- lm(popularity ~ year + danceability,
+              data = train_lm)
+
+summary(model_2c)
+```
+
+```{r include=FALSE}
+model_3a <- lm(popularity ~ year + danceability + loudness,
+               data = train_lm)
+
+summary(model_3a)
+```
+
+```{r include=FALSE}
+model_3b <- lm(popularity ~ year + danceability + instrumentalness,
+               data = train_lm)
+
+summary(model_3b)
+```
+
+<br />
+
+#### Anova Test
+I used __anova__ (Analysis of Variance) tests to check that the difference between my new model and previous models was significant.
+```{r echo=TRUE}
+anova(model_3a, model_2c)
+```
+
+- With a P-value < 0.001 we can reject the null hypothesis in favour of the alternative, meaning the new model (model_3a) is statistically significant
+
+<br />
+
+#### Final Linear Regression Model
+
+<br />
+__popularity ~ year + danceability + loudness + (-liveness) + explicit__
+<br />
+
+```{r echo=TRUE}
+model_6a <- lm(popularity ~ year + danceability + loudness + liveness + explicit,
+               data = train_lm)
+
+summary(model_6a)
+``` 
+
+- So here we have the final model. I stopped adding variables as the Adjusted r^2 started dropping and our multiple r^2 was barely going up.
+
+- All of our P-Values are significant and we have a Multiple R^2 of 0.55, with an adjusted R^2 also of 0.55. This means that 55% of the variance in popularity is explained our other variables. 
+
+- This suggests that the model has moderate explanatory power, as about half of the data points can be accounted for by the linear regression line. However, it also tells us that there is a large portion of the variability that remains unexplained and might be attributed to other factors not included in the model.
+
+### Logistic Regression Model Build
+
+- Logistic regression is a statistical analysis method to predict, or explain a binary outcome, such as yes or no, based on prior observations of a data set
+
+- Rather than using the popularity score I used a variable which I created called __is_popular__. This splits the data in to a logical type, so it's TRUE if the song has a popularity score of 50 and above, and FALSE if below 50
+
+- This was built in a similar to the linear model. I look for correlations, and I add them to my model 1 at a time, checking they are significant. The main difference is that I'm looking for for a high AUC score this time, rather than the multiple R^2 I was looking for in the linear model
+
+- For full logistic model build see logistic_model_build.Rmd
+
+- I decided to no longer include the year or decade the song was released for this model. It had such a large influence on the linear model I thought it would be more interesting to see how the logistic model fared without it. Also, if we're building a model to assist with the writing of a current day "popular" song, then including variables such as year and decade are of no help
+
+
+```{r eval=FALSE, include=FALSE}
+spot_sample %>% 
+  mutate(explicit = as.logical(explicit)) %>%
+ggplot() +
+  aes(x = loudness, y = as.integer(is_popular), colour = explicit) +
+  geom_jitter(shape = 1,
+              position = position_jitter(h = 0.05, w = 0.05),
+              alpha = 0.8) +
+   geom_line(data = train_model_1_loud, aes(x = loudness , y = pred), col = 'red') +
+  ylab("Probability") +
+      scale_colour_brewer(palette =  "Dark2") +
+  theme_bw() +
+  theme(axis.text  = element_text(face = "bold", size = 15, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 15, family = "Times"),
+        title = element_text(face = "bold", size = 15, family = "Times"),
+        legend.text = element_text(face = "bold", size = 10, family = "Times")
+  ) 
+
+
+# ggplot(mortgage_data) +
+#   geom_jitter(aes(x = tu_score, y = as.integer(accepted)), shape = 1, 
+#               position = position_jitter(h = 0.03)) + 
+#    geom_line(data = predict_log, aes(x = tu_score , y = pred), col = 'red') + 
+#   ylab("Probability")
+```
+
+
+#### Final Logistic Regression Model
+
+<br />
+
+__is_popular ~ loudness + explicit + danceability + no_of_artists__
+
+```{r include=FALSE}
+n_data <- nrow(spotify_data_for_modelling)
+
+test_index <- sample(1:n_data, size = n_data*0.2)
+
+train_log_mod <- slice(spotify_data_for_modelling, -test_index)
+test_log_mod <- slice(spotify_data_for_modelling, test_index)
+
+options(scipen = 999)
+
+```
+
+```{r echo=TRUE}
+model_4_final <- glm(is_popular ~ loudness + explicit + danceability + no_of_artists,
+             family = "binomial",
+             data = train_log_mod)
+
+summary(model_4_final)
+```
+
+
+```{r include=FALSE}
+tidy(model_4_final)
+
+train_model_4_final <- train_log_mod %>%
+  add_predictions(model_4_final, type = "response")
+
+roc_obj_mod4 <- train_model_4_final %>%
+  roc(response = is_popular, predictor = pred)
+```
+
+
+
+```{r echo=FALSE, fig.width=8}
+#fig.width set for html knit
+roc_curve <- ggroc(
+  data = list(
+    final_model = roc_obj_mod4
+  ), 
+  legacy.axes = TRUE,
+  linewidth = 1) +
+  labs(x = "1 - Specificity",
+       y = "Sensitivity",
+       title = "Logistic Regression Model",
+       subtitle = "ROC Curve") +
+  coord_fixed() + 
+  theme_classic() +
+  scale_colour_discrete(labels = "Final Model") +
+  theme(axis.text  = element_text(face = "bold", size = 12, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 12, family = "Times"),
+        title = element_text(face = "bold", size = 14, family = "Times"),
+        legend.text = element_text(face = "bold", size = 10, family = "Times"),
+        legend.title = element_blank())
+
+auc(roc_obj_mod4)
+
+roc_curve
+```
+
+- We have a slightly different result this time, with an improved model
+- ROC curve shows the performance of my binary classification model (model_4_final). It illustrates the trade off between the true positive (Sensitivity) and the false positive (1 - Specificity) for different classification thresholds
+- A perfect model would have an AUC score of 1 and a random classifier would have an AUC score of 0.5
+- Here we have an AUC score of 0.72 which indicates that the model performs much better than random chance with but still has room for improvement.
+
+
+```{r include=FALSE, fig.width=8}
+
+log_mod_1960 <- train_log_mod %>% 
+  filter(decade == 1960 |
+           decade == 1970 |
+           decade == 1980)
+
+model_60_70_80 <- glm(is_popular ~ loudness + explicit + danceability + no_of_artists,
+             family = "binomial",
+             data = log_mod_1960)
+
+summary(model_60_70_80)
+
+tidy(model_60_70_80)
+
+train_model_60_70_80 <- log_mod_1960 %>%
+  add_predictions(model_60_70_80, type = "response")
+
+roc_obj_mod_60_70_80 <- train_model_60_70_80 %>%
+  roc(response = is_popular, predictor = pred)
+
+roc_curve <- ggroc(
+  data = list(
+    best_model = roc_obj_mod4,
+    mod_60_70_80 = roc_obj_mod_60_70_80
+  ), 
+  legacy.axes = TRUE) +
+  coord_fixed() 
+
+auc(roc_obj_mod_60_70_80)
+```
+
+```{r include=FALSE, fig.width=8}
+#fig.width set for html knit
+log_mod_1990 <- train_log_mod %>% 
+  filter(decade == 1990 |
+           decade == 2000 |
+           decade == 2010)
+
+model_90_00_10 <- glm(is_popular ~ loudness + explicit + danceability + no_of_artists,
+                      family = "binomial",
+                      data = log_mod_1990)
+
+summary(model_90_00_10)
+
+tidy(model_90_00_10)
+
+train_model_90_00_10 <- log_mod_1990 %>%
+  add_predictions(model_90_00_10, type = "response")
+
+roc_obj_mod_90_00_10 <- train_model_90_00_10 %>%
+  roc(response = is_popular, predictor = pred)
+
+
+roc_curve <- ggroc(
+  data = list(
+    best_model = roc_obj_mod4,
+    dec_60s_70s_80s = roc_obj_mod_60_70_80,
+    dec_90s_00s_10s = roc_obj_mod_90_00_10
+  ), 
+  legacy.axes = TRUE,
+  linewidth = 1) +
+  coord_fixed() +
+  labs(x = "1 - Specificity",
+       y = "Sensitivity",
+       title = "Logistic Regression Model",
+       subtitle = "Performance on Different Decades") +
+  scale_colour_brewer(palette =  "Dark2") +
+  scale_colour_discrete(labels = c("Final Model", "60s, 70s & 80s", "90s, 00s & 10s")) +
+  theme_classic() +
+  theme(axis.text  = element_text(face = "bold", size = 12, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 12, family = "Times"),
+        title = element_text(face = "bold", size = 14, family = "Times"),
+        legend.text = element_text(face = "bold", size = 10, family = "Times"),
+        legend.title = element_blank()
+  )
+```
+
+
+```{r echo=FALSE,fig.width=8}
+#fig.width set for html knit
+
+roc_curve
+
+#ggsave("plot_images/log_models.png", dpi = 720, width = 12, height = 6)
+
+```
+
+- I thought it would be interesting to see how my Final Model created using all of the data from 1960 - 2020 performed against some of the different decades. So I split the data in 2 and ran my model on the 60s, 70s and 80s, and then again on 90s, 00s, & 10s
+- We can see the model performed rather poorly on the older decades with an AUC score of 0.6, which tells us it is only slightly better than a random classifier
+- It performed slightly better on the more recent decades with an AUC score of 0.62
+- I believe this shows us that even though we have removed the year from the model, the model is still weighted towards newer music
+
+#### Genre Analysis
+
+```{r include=FALSE}
+# Pull out the top 5 Genres from all of the data
+top_5_genres <- spotify_data_clean_join %>% 
+  count(genres) %>% 
+  drop_na() %>% 
+  arrange(desc(n)) %>% 
+  head(5) %>% 
+  pull(genres)
+```
+
+```{r echo=FALSE, fig.width=10}
+# Plot showing the proportion of the top_5_genres over the decades
+# fi.width set for html knit purposes
+spotify_data_clean_join %>%
+  mutate(genres = as.factor(genres)) %>% 
+  filter(decade != 2020) %>% 
+  drop_na(genres) %>%
+  group_by(decade) %>% 
+  mutate(decade_count = n()) %>%
+  group_by(decade, genres) %>%
+  mutate(genre_count = n()) %>% 
+  mutate(genre_prop = round((genre_count / decade_count),2 ) * 100) %>% 
+  filter(genres %in% top_5_genres) %>% 
+  ggplot() +
+  aes(x = decade, y = genre_prop, colour = genres) +
+  geom_line(linewidth = 1) +
+  labs(x = "Decade",
+       y = "Percentage",
+       colour = "Top 5 Genres") +
+  theme_classic() +
+  scale_colour_brewer(palette =  "Dark2", labels = c("Folk", "Pop", "Rap", "Rock", "Soul")) +
+  theme(axis.text  = element_text(face = "bold", size = 12, family = "Times"),
+        axis.title  = element_text(face = "bold", size = 12, family = "Times"),
+        title = element_text(face = "bold", size = 14, family = "Times"),
+        legend.text = element_text(face = "bold", size = 10, family = "Times"),
+        legend.title = element_text(face = "bold", size = 12, family = "Times")
+  ) 
+
+#ggsave("plot_images/genres.png", dpi = 720, width = 12, height = 6)
+
+```
+
+
+- Here is a Genre analysis showing the proportional change of the Top 5 Genres from 1960 - 2020
+
+- I kept the Genres and Number of Followers out of my model building as I was missing almost 50% of the data
+
+- Here we see a massive decline in the proportion of folk and soul songs from 1960s and 70s to 2010s
+
+- A rise in Rock music from the 60s with a spike in the 1980s then dropping slowly to 2010s
+
+- A gradual rise in Rap and Pop over the decades, with Pop just overtaking Rap. Combined, they make up around 40% of the songs released in the 2010s
+
+
+#### Conclusion
+
+- The best model is my logistic model. It gave me a reasonable AUC score of 0.72 and I feel it really works well as an explanatory model
+
+- From my Genre analysis I discovered that the most common genres of the last decade are Pop & Rap
+
+- There is no escaping how heavily weighted the popularity score is towards new music. I plan to recreate this project using only new music. I feel this will give me a better insight in to what gives a song a high popularity score. 

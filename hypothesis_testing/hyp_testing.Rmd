@@ -1,0 +1,293 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(spotifyr)
+library(tidyverse)
+library(infer)
+```
+
+```{r}
+spotify_clean_join <- read_csv(here("clean_data/spotify_clean_join.csv"))
+```
+
+### Hypothesis Testing for Audio Features
+
+H0: The mean acousticness in 1960s is the same as the mean acousticness in 2010s
+
+Ha: The mean acousticness in 1960s is different than the mean acousticness in 2010s
+
+H0: mean(acousticness_2020) - mean(acousticness_1960) = 0
+Ha: acousticness_2020 - acousticness_1960 <> 0
+```{r}
+acoustic_decade_hyp <- spotify_clean_join %>% 
+  select(decade, acousticness) %>% 
+  filter(decade == 1960 | decade == 2010) %>% 
+  mutate(decade = as.factor(decade))
+
+null_distribution <- acoustic_decade_hyp %>% 
+  specify(acousticness ~ decade) %>% 
+  hypothesize(null = "independence") %>% 
+  generate(reps = 1000, type = "permute") %>% 
+  calculate(stat = "diff in means", order = c("2010", "1960")) 
+
+observed_stat <- acoustic_decade_hyp %>% 
+  specify(acousticness ~ decade) %>%
+  calculate(stat = "diff in means", order = c("2010", "1960"))
+
+null_distribution %>%
+  visualise() +
+  shade_p_value(obs_stat = observed_stat, direction = "both")
+
+p_value <- null_distribution %>%
+  get_p_value(obs_stat = observed_stat, direction = "both")
+```
+
+H0: The mean danceability in 1960s is the same as the mean danceability in 2010s
+
+Ha: The mean danceability in 1960s is different than the mean danceability in 2010s
+
+H0: mean(danceability_2020) - mean(danceability_1960) = 0
+Ha: danceability_2020 - danceability_1960 <> 0
+```{r}
+dance_decade_hyp <- spotify_clean_join %>% 
+  select(decade, danceability) %>% 
+  filter(decade == 1960 | decade == 2010) %>% 
+  mutate(decade = as.factor(decade))
+
+null_distribution <- dance_decade_hyp %>% 
+  specify(danceability ~ decade) %>% 
+  hypothesize(null = "independence") %>% 
+  generate(reps = 1000, type = "permute") %>% 
+  calculate(stat = "diff in means", order = c("2010", "1960")) 
+
+observed_stat <- dance_decade_hyp %>% 
+  specify(danceability ~ decade) %>%
+  calculate(stat = "diff in means", order = c("2010", "1960"))
+
+null_distribution %>%
+  visualise() +
+  shade_p_value(obs_stat = observed_stat, direction = "both")
+
+p_value <- null_distribution %>%
+  get_p_value(obs_stat = observed_stat, direction = "both")
+```
+
+H0: The mean energy in 1960s is the same as the mean energy in 2010s
+
+Ha: The mean energy in 1960s is different than the mean energy in 2010s
+
+H0: mean(energy_2020) - mean(energy_1960) = 0
+Ha: energy2020 - energy_1960 <> 0
+```{r}
+energy_decade_hyp <- spotify_clean_join %>% 
+  select(decade, energy) %>% 
+  filter(decade == 1960 | decade == 2010) %>% 
+  mutate(decade = as.factor(decade))
+
+null_distribution <- energy_decade_hyp %>% 
+  specify(energy ~ decade) %>% 
+  hypothesize(null = "independence") %>% 
+  generate(reps = 1000, type = "permute") %>% 
+  calculate(stat = "diff in means", order = c("2010", "1960")) 
+
+observed_stat <- energy_decade_hyp %>% 
+  specify(energy ~ decade) %>%
+  calculate(stat = "diff in means", order = c("2010", "1960"))
+
+null_distribution %>%
+  visualise() +
+  shade_p_value(obs_stat = observed_stat, direction = "both")
+
+p_value <- null_distribution %>%
+  get_p_value(obs_stat = observed_stat, direction = "both")
+```
+H0: The mean instrumentalness in 1960s is the same as the mean instrumentalness in 2010s
+
+Ha: The mean instrumentalness in 1960s is different than the mean instrumentalness in 2010s
+
+H0: mean(instrumentalness_2020) - mean(instrumentalness_1960) = 0
+Ha: instrumentalness_2020 - instrumentalness_1960 <> 0
+
+```{r}
+inst_decade_hyp <- spotify_clean_join %>% 
+  select(decade, instrumentalness) %>% 
+  filter(decade == 1960 | decade == 2010) %>% 
+  mutate(decade = as.factor(decade))
+
+null_distribution <- inst_decade_hyp %>% 
+  specify(instrumentalness ~ decade) %>% 
+  hypothesize(null = "independence") %>% 
+  generate(reps = 1000, type = "permute") %>% 
+  calculate(stat = "diff in means", order = c("2010", "1960")) 
+
+observed_stat <- inst_decade_hyp %>% 
+  specify(instrumentalness ~ decade) %>%
+  calculate(stat = "diff in means", order = c("2010", "1960"))
+
+null_distribution %>%
+  visualise() +
+  shade_p_value(obs_stat = observed_stat, direction = "both")
+
+p_value <- null_distribution %>%
+  get_p_value(obs_stat = observed_stat, direction = "both")
+```
+
+H0: The mean liveness in 1960s is the same as the mean liveness in 2010s
+
+Ha: The mean liveness in 1960s is different than the mean liveness in 2010s
+
+H0: mean(liveness_2020) - mean(liveness_1960) = 0
+Ha: liveness_2020 - liveness_1960 <> 0
+
+```{r}
+live_decade_hyp <- spotify_clean_join %>% 
+  select(decade, liveness) %>% 
+  filter(decade == 1960 | decade == 2010) %>% 
+  mutate(decade = as.factor(decade))
+
+null_distribution <- live_decade_hyp %>% 
+  specify(liveness ~ decade) %>% 
+  hypothesize(null = "independence") %>% 
+  generate(reps = 1000, type = "permute") %>% 
+  calculate(stat = "diff in means", order = c("2010", "1960")) 
+
+observed_stat <- live_decade_hyp %>% 
+  specify(liveness ~ decade) %>%
+  calculate(stat = "diff in means", order = c("2010", "1960"))
+
+null_distribution %>%
+  visualise() +
+  shade_p_value(obs_stat = observed_stat, direction = "both")
+
+p_value <- null_distribution %>%
+  get_p_value(obs_stat = observed_stat, direction = "both")
+```
+
+H0: The mean loudness in 1960s is the same as the mean loudness in 2010s
+
+Ha: The mean loudness in 1960s is different than the mean loudness in 2010s
+
+H0: mean(loudness_2020) - mean(loudness_1960) = 0
+Ha: loudness_2020 - loudness_1960 <> 0
+
+```{r}
+loud_decade_hyp <- spotify_clean_join %>% 
+  select(decade, loudness) %>% 
+  filter(decade == 1960 | decade == 2010) %>% 
+  mutate(decade = as.factor(decade))
+
+null_distribution <- loud_decade_hyp %>% 
+  specify(loudness ~ decade) %>% 
+  hypothesize(null = "independence") %>% 
+  generate(reps = 1000, type = "permute") %>% 
+  calculate(stat = "diff in means", order = c("2010", "1960")) 
+
+observed_stat <- loud_decade_hyp %>% 
+  specify(loudness ~ decade) %>%
+  calculate(stat = "diff in means", order = c("2010", "1960"))
+
+null_distribution %>%
+  visualise() +
+  shade_p_value(obs_stat = observed_stat, direction = "both")
+
+p_value <- null_distribution %>%
+  get_p_value(obs_stat = observed_stat, direction = "both")
+```
+
+H0: The mean speechiness in 1960s is the same as the mean speechiness in 2010s
+
+Ha: The mean speechiness in 1960s is different than the mean speechiness in 2010s
+
+H0: mean(speechiness_2020) - mean(speechiness_1960) = 0
+Ha: speechiness_2020 - speechiness_1960 <> 0
+
+```{r}
+speech_decade_hyp <- spotify_clean_join %>% 
+  select(decade, speechiness) %>% 
+  filter(decade == 1960 | decade == 2010) %>% 
+  mutate(decade = as.factor(decade))
+
+null_distribution <- speech_decade_hyp %>% 
+  specify(speechiness ~ decade) %>% 
+  hypothesize(null = "independence") %>% 
+  generate(reps = 1000, type = "permute") %>% 
+  calculate(stat = "diff in means", order = c("2010", "1960")) 
+
+observed_stat <- speech_decade_hyp %>% 
+  specify(speechiness ~ decade) %>%
+  calculate(stat = "diff in means", order = c("2010", "1960"))
+
+null_distribution %>%
+  visualise() +
+  shade_p_value(obs_stat = observed_stat, direction = "both")
+
+p_value <- null_distribution %>%
+  get_p_value(obs_stat = observed_stat, direction = "both")
+```
+
+H0: The mean valence in 1960s is the same as the mean valence in 2010s
+
+Ha: The mean valence in 1960s is different than the mean valence in 2010s
+
+H0: mean(valence_2020) - mean(valence_1960) = 0
+Ha: valence_2020 - valence_1960 <> 0
+
+```{r}
+valence_decade_hyp <- spotify_clean_join %>% 
+  select(decade, valence) %>% 
+  filter(decade == 1960 | decade == 2010) %>% 
+  mutate(decade = as.factor(decade))
+
+null_distribution <- valence_decade_hyp %>% 
+  specify(valence ~ decade) %>% 
+  hypothesize(null = "independence") %>% 
+  generate(reps = 1000, type = "permute") %>% 
+  calculate(stat = "diff in means", order = c("2010", "1960")) 
+
+observed_stat <- valence_decade_hyp %>% 
+  specify(valence ~ decade) %>%
+  calculate(stat = "diff in means", order = c("2010", "1960"))
+
+null_distribution %>%
+  visualise() +
+  shade_p_value(obs_stat = observed_stat, direction = "both")
+
+p_value <- null_distribution %>%
+  get_p_value(obs_stat = observed_stat, direction = "both")
+```
+
+### Hypothesis test for difference in popularity means
+
+H0: The mean popularity in 1960s is the same as the mean popularity in 2010s
+
+Ha: The mean popularity in 1960s is different than the mean popularity in 2010s
+
+H0: mean(popularity_2020) - mean(popularity_1960) = 0
+Ha: popularity_2020 - popularity_1960 <> 0
+
+```{r}
+pop_decade_hyp <- spotify_clean_join %>% 
+  select(year, popularity) %>% 
+  filter(year == 1960 | year == 2010) %>% 
+  mutate(year = as.factor(year))
+
+null_distribution <- pop_decade_hyp %>% 
+  specify(popularity ~ year) %>% 
+  hypothesize(null = "independence") %>% 
+  generate(reps = 1000, type = "permute") %>% 
+  calculate(stat = "diff in means", order = c("2010", "1960")) 
+
+observed_stat <- pop_decade_hyp %>% 
+  specify(popularity ~ year) %>%
+  calculate(stat = "diff in means", order = c("2010", "1960"))
+
+null_distribution %>%
+  visualise() +
+  shade_p_value(obs_stat = observed_stat, direction = "both")
+
+p_value <- null_distribution %>%
+  get_p_value(obs_stat = observed_stat, direction = "both")
+```
