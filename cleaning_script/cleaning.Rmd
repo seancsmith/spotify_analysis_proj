@@ -13,13 +13,6 @@ library(here)
 ```
 
 ```{r}
-Sys.setenv(SPOTIFY_CLIENT_ID = '38edc55f660e4f5689cff0abf8d275a5')
-Sys.setenv(SPOTIFY_CLIENT_SECRET = '5f29ddcdbddd414bbe9557088f974a53')
-
-access_token <- get_spotify_access_token()
-```
-
-```{r}
 spotify_data <- read_csv(here("raw_data/spotify_data.csv"))
 diff_spotify_combine_select <- read_csv(here("raw_data/diff_spotify_combine.csv"))
 ```
