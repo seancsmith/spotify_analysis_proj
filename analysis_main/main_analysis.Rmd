@@ -15,11 +15,12 @@ library(ggfortify)
 library(GGally)
 library(pROC)
 library(broom)
+library(here)
 ```
 
 ```{r include=FALSE}
-spotify_data_clean_join <- read_csv("clean_data/spotify_clean_join.csv")
-spotify_data <- read_csv("raw_data/spotify_data.csv")
+spotify_data_clean_join <- read_csv(here("clean_data/spotify_clean_join.csv"))
+spotify_data <- read_csv(here("raw_data/spotify_data.csv"))
 ```
 
 #### Introduction
